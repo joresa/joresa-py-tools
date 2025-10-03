@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Joresa Tools Dashboard</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .quick-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+            margin: 10px 0;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .section {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .tool-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .tool-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .tool-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+
+        .tool-name {
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .tool-description {
+            font-size: 0.9em;
+            opacity: 0.9;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+
+        .tool-stats {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .tool-category {
+            font-size: 0.8em;
+            opacity: 0.8;
+        }
+
+        .tool-launches {
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .chart-container {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .chart-title {
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .timeline-container {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .tab-container {
+            margin-bottom: 20px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            border-bottom: 2px solid #e0e0e0;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 1em;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .tab:hover {
+            color: #667eea;
+        }
+
+        .tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+            font-weight: 600;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        canvas {
+            max-height: 300px;
+        }
+
+        .chart-bar {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .chart-bar-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .chart-bar-label {
+            min-width: 120px;
+            font-size: 0.9em;
+            color: #333;
+        }
+
+        .chart-bar-container {
+            flex: 1;
+            background: #f0f0f0;
+            border-radius: 4px;
+            height: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chart-bar-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 10px;
+            color: white;
+            font-weight: bold;
+            font-size: 0.85em;
+        }
+
+        .chart-pie {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .chart-pie-visual {
+            flex-shrink: 0;
+        }
+
+        .chart-pie-legend {
+            flex: 1;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+
+        .legend-label {
+            font-size: 0.9em;
+            color: #333;
+        }
+
+        .legend-value {
+            margin-left: auto;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .chart-line {
+            width: 100%;
+            height: 250px;
+            position: relative;
+        }
+
+        .chart-line-svg {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚀 Joresa Tools Dashboard</h1>
+            <p class="subtitle">Your central hub for productivity tools and analytics</p>
+        </header>
+
+        <div id="quick-stats-section" class="quick-stats">
+            <div class="loading">Loading statistics...</div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">🛠️ Available Tools</h2>
+            <div id="tools-grid" class="tools-grid">
+                <div class="loading">Loading tools...</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">📈 Usage Analytics</h2>
+            <div class="charts-grid">
+                <div class="chart-container">
+                    <div class="chart-title">Most Used Tools</div>
+                    <div id="topToolsChart" class="chart-bar"></div>
+                </div>
+                <div class="chart-container">
+                    <div class="chart-title">Usage by Department</div>
+                    <div id="departmentChart" class="chart-pie"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">📅 Usage Timeline</h2>
+            <div class="tab-container">
+                <div class="tabs">
+                    <button class="tab active" onclick="showTab('timeline')">By Date</button>
+                    <button class="tab" onclick="showTab('users')">By User</button>
+                </div>
+                <div id="timeline-content" class="tab-content active">
+                    <div class="timeline-container">
+                        <div id="timelineChart" class="chart-line"></div>
+                    </div>
+                </div>
+                <div id="users-content" class="tab-content">
+                    <div class="timeline-container">
+                        <div id="usersChart" class="chart-bar"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showTab(tabName) {
+            // Remove active class from all tabs and contents
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            // Add active class to selected tab and content
+            event.target.classList.add('active');
+            document.getElementById(tabName + '-content').classList.add('active');
+        }
+
+        async function loadQuickStats() {
+            try {
+                const response = await fetch('/api/analytics/quick-stats');
+                const stats = await response.json();
+                
+                const statsHTML = `
+                    <div class="stat-card">
+                        <div class="stat-label">Most Used Tool</div>
+                        <div class="stat-value">${stats.most_used_tool}</div>
+                        <div class="stat-label">${stats.most_used_count} launches</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Total Launches</div>
+                        <div class="stat-value">${stats.total_launches}</div>
+                        <div class="stat-label">This week</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Avg Daily Usage</div>
+                        <div class="stat-value">${stats.avg_daily_usage}</div>
+                        <div class="stat-label">Launches per day</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Active Users</div>
+                        <div class="stat-value">${stats.unique_users}</div>
+                        <div class="stat-label">Unique this week</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Available Tools</div>
+                        <div class="stat-value">${stats.active_tools}</div>
+                        <div class="stat-label">Ready to use</div>
+                    </div>
+                `;
+                
+                document.getElementById('quick-stats-section').innerHTML = statsHTML;
+            } catch (error) {
+                console.error('Error loading quick stats:', error);
+            }
+        }
+
+        async function loadTools() {
+            try {
+                const response = await fetch('/api/tools');
+                const tools = await response.json();
+                
+                const toolsHTML = tools.map(tool => `
+                    <div class="tool-card" onclick="launchTool(${tool.id})">
+                        <div class="tool-icon">${tool.icon}</div>
+                        <div class="tool-name">${tool.name}</div>
+                        <div class="tool-description">${tool.description}</div>
+                        <div class="tool-stats">
+                            <span class="tool-category">${tool.category}</span>
+                            <span class="tool-launches">🚀 ${tool.launches} launches</span>
+                        </div>
+                    </div>
+                `).join('');
+                
+                document.getElementById('tools-grid').innerHTML = toolsHTML;
+            } catch (error) {
+                console.error('Error loading tools:', error);
+                document.getElementById('tools-grid').innerHTML = '<div class="loading">Error loading tools</div>';
+            }
+        }
+
+        async function loadTopToolsChart() {
+            try {
+                const response = await fetch('/api/analytics/top-tools');
+                const data = await response.json();
+                
+                const maxCount = Math.max(...data.map(d => d.count));
+                
+                const chartHTML = data.map(item => `
+                    <div class="chart-bar-item">
+                        <div class="chart-bar-label">${item.name}</div>
+                        <div class="chart-bar-container">
+                            <div class="chart-bar-fill" style="width: ${(item.count / maxCount) * 100}%">
+                                ${item.count}
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+                
+                document.getElementById('topToolsChart').innerHTML = chartHTML;
+            } catch (error) {
+                console.error('Error loading top tools chart:', error);
+            }
+        }
+
+        async function loadDepartmentChart() {
+            try {
+                const response = await fetch('/api/analytics/by-department');
+                const data = await response.json();
+                
+                const colors = [
+                    '#667eea',
+                    '#764ba2',
+                    '#f093fb',
+                    '#4facfe',
+                    '#43e97b'
+                ];
+                
+                const total = data.reduce((sum, item) => sum + item.count, 0);
+                let startAngle = 0;
+                
+                const svgParts = data.map((item, index) => {
+                    const percentage = (item.count / total) * 100;
+                    const angle = (item.count / total) * 360;
+                    const endAngle = startAngle + angle;
+                    
+                    const x1 = 100 + 80 * Math.cos((startAngle - 90) * Math.PI / 180);
+                    const y1 = 100 + 80 * Math.sin((startAngle - 90) * Math.PI / 180);
+                    const x2 = 100 + 80 * Math.cos((endAngle - 90) * Math.PI / 180);
+                    const y2 = 100 + 80 * Math.sin((endAngle - 90) * Math.PI / 180);
+                    
+                    const largeArc = angle > 180 ? 1 : 0;
+                    
+                    const path = `M 100 100 L ${x1} ${y1} A 80 80 0 ${largeArc} 1 ${x2} ${y2} Z`;
+                    
+                    startAngle = endAngle;
+                    
+                    return `<path d="${path}" fill="${colors[index % colors.length]}" />`;
+                }).join('');
+                
+                const legendHTML = data.map((item, index) => `
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: ${colors[index % colors.length]}"></div>
+                        <div class="legend-label">${item.department}</div>
+                        <div class="legend-value">${item.count}</div>
+                    </div>
+                `).join('');
+                
+                const chartHTML = `
+                    <div class="chart-pie-visual">
+                        <svg width="200" height="200" viewBox="0 0 200 200">
+                            ${svgParts}
+                        </svg>
+                    </div>
+                    <div class="chart-pie-legend">
+                        ${legendHTML}
+                    </div>
+                `;
+                
+                document.getElementById('departmentChart').innerHTML = chartHTML;
+            } catch (error) {
+                console.error('Error loading department chart:', error);
+            }
+        }
+
+        async function loadTimelineChart() {
+            try {
+                const response = await fetch('/api/analytics/timeline');
+                const data = await response.json();
+                
+                const maxCount = Math.max(...data.map(d => d.count));
+                const minCount = Math.min(...data.map(d => d.count));
+                const padding = 40;
+                const width = 700;
+                const height = 250;
+                const chartWidth = width - 2 * padding;
+                const chartHeight = height - 2 * padding;
+                
+                const points = data.map((item, index) => {
+                    const x = padding + (index / (data.length - 1)) * chartWidth;
+                    const y = height - padding - ((item.count - minCount) / (maxCount - minCount)) * chartHeight;
+                    return `${x},${y}`;
+                }).join(' ');
+                
+                const areaPoints = `${padding},${height - padding} ${points} ${padding + chartWidth},${height - padding}`;
+                
+                const gridLines = [];
+                for (let i = 0; i <= 5; i++) {
+                    const y = padding + (i / 5) * chartHeight;
+                    const value = Math.round(maxCount - (i / 5) * (maxCount - minCount));
+                    gridLines.push(`
+                        <line x1="${padding}" y1="${y}" x2="${width - padding}" y2="${y}" stroke="#e0e0e0" stroke-width="1"/>
+                        <text x="${padding - 5}" y="${y + 4}" text-anchor="end" font-size="12" fill="#666">${value}</text>
+                    `);
+                }
+                
+                const labels = data.map((item, index) => {
+                    const x = padding + (index / (data.length - 1)) * chartWidth;
+                    const date = new Date(item.date);
+                    const label = `${date.getMonth() + 1}/${date.getDate()}`;
+                    return `<text x="${x}" y="${height - padding + 20}" text-anchor="middle" font-size="11" fill="#666">${label}</text>`;
+                }).join('');
+                
+                const svgHTML = `
+                    <svg class="chart-line-svg" viewBox="0 0 ${width} ${height}">
+                        ${gridLines.join('')}
+                        <polygon points="${areaPoints}" fill="rgba(102, 126, 234, 0.2)" />
+                        <polyline points="${points}" fill="none" stroke="#667eea" stroke-width="3" />
+                        ${points.split(' ').map(point => {
+                            const [x, y] = point.split(',');
+                            return `<circle cx="${x}" cy="${y}" r="4" fill="#667eea" />`;
+                        }).join('')}
+                        ${labels}
+                    </svg>
+                `;
+                
+                document.getElementById('timelineChart').innerHTML = svgHTML;
+            } catch (error) {
+                console.error('Error loading timeline chart:', error);
+            }
+        }
+
+        async function loadUsersChart() {
+            try {
+                const response = await fetch('/api/analytics/by-user');
+                const data = await response.json();
+                
+                const maxCount = Math.max(...data.map(d => d.count));
+                
+                const chartHTML = data.map(item => {
+                    const username = item.user.split('@')[0];
+                    return `
+                        <div class="chart-bar-item">
+                            <div class="chart-bar-label">${username}</div>
+                            <div class="chart-bar-container">
+                                <div class="chart-bar-fill" style="width: ${(item.count / maxCount) * 100}%; background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);">
+                                    ${item.count}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+                
+                document.getElementById('usersChart').innerHTML = chartHTML;
+            } catch (error) {
+                console.error('Error loading users chart:', error);
+            }
+        }
+
+        function launchTool(toolId) {
+            alert(`Launching tool ${toolId}...\n\nIn a production environment, this would open the tool.`);
+        }
+
+        // Load all data when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            loadQuickStats();
+            loadTools();
+            loadTopToolsChart();
+            loadDepartmentChart();
+            loadTimelineChart();
+            loadUsersChart();
+        });
+    </script>
+</body>
+</html>
