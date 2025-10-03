@@ -26,7 +26,22 @@ joresa-py-tools/
 
 ## Setup Instructions
 
-### Backend Setup
+### Quick Start (Recommended)
+
+Run the automated setup script:
+```bash
+./start.sh
+```
+
+This will:
+- Set up both backend and frontend
+- Install all dependencies
+- Start both services
+- Open the dashboard at http://localhost:5173
+
+### Manual Setup
+
+#### Backend Setup
 
 1. Navigate to the backend directory:
 ```bash
