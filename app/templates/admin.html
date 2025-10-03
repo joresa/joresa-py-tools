@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Panel - Joresa Py Tools{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1>Admin Panel</h1>
+        <p>Administrative tools and settings</p>
+    </div>
+
+    <div class="admin-notice">
+        <strong>Note:</strong> This page is only accessible to users with the <span class="role-badge role-admin">admin</span> role.
+    </div>
+
+    <div class="admin-sections">
+        <div class="admin-card">
+            <h3>User Management</h3>
+            <p>Manage user accounts, roles, and permissions.</p>
+            <button class="btn btn-secondary" disabled>Manage Users</button>
+        </div>
+
+        <div class="admin-card">
+            <h3>System Settings</h3>
+            <p>Configure system-wide settings and preferences.</p>
+            <button class="btn btn-secondary" disabled>Configure Settings</button>
+        </div>
+
+        <div class="admin-card">
+            <h3>Activity Logs</h3>
+            <p>View system activity and user logs.</p>
+            <button class="btn btn-secondary" disabled>View Logs</button>
+        </div>
+
+        <div class="admin-card">
+            <h3>Security</h3>
+            <p>Manage security settings and access controls.</p>
+            <button class="btn btn-secondary" disabled>Security Settings</button>
+        </div>
+    </div>
+
+    <div class="info-box">
+        <h3>Admin Access Confirmed</h3>
+        <p>You are viewing this page because you have admin privileges. Only users with the admin role can access this panel.</p>
+    </div>
+</div>
+{% endblock %}

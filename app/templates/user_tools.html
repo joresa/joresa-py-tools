@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}User Tools - Joresa Py Tools{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1>User Tools</h1>
+        <p>Advanced tools for users and administrators</p>
+    </div>
+
+    <div class="admin-notice">
+        <strong>Note:</strong> This page is accessible to users with <span class="role-badge role-user">user</span> or <span class="role-badge role-admin">admin</span> roles.
+    </div>
+
+    <div class="tools-grid">
+        <div class="tool-card">
+            <h3>Data Processing</h3>
+            <p>Advanced data processing and analysis tools.</p>
+            <button class="btn btn-secondary" disabled>Launch Tool</button>
+        </div>
+
+        <div class="tool-card">
+            <h3>Report Generator</h3>
+            <p>Generate custom reports and exports.</p>
+            <button class="btn btn-secondary" disabled>Generate Report</button>
+        </div>
+
+        <div class="tool-card">
+            <h3>Batch Operations</h3>
+            <p>Perform batch operations on multiple items.</p>
+            <button class="btn btn-secondary" disabled>Start Batch</button>
+        </div>
+
+        <div class="tool-card">
+            <h3>API Integration</h3>
+            <p>Connect and manage external API integrations.</p>
+            <button class="btn btn-secondary" disabled>Manage APIs</button>
+        </div>
+    </div>
+
+    <div class="info-box">
+        <h3>User-Level Access</h3>
+        <p>You have access to these tools because you have user or admin privileges. These tools provide advanced functionality beyond the basic public tools.</p>
+    </div>
+</div>
+{% endblock %}

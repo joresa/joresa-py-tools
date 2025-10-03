@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}Public Tools - Joresa Py Tools{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1>Public Tools</h1>
+        <p>Tools available to all authenticated users</p>
+    </div>
+
+    <div class="admin-notice">
+        <strong>Note:</strong> These tools are accessible to all authenticated users regardless of role.
+    </div>
+
+    <div class="tools-grid">
+        <div class="tool-card">
+            <h3>Text Formatter</h3>
+            <p>Format and transform text with various options.</p>
+            <button class="btn btn-secondary" disabled>Open Tool</button>
+        </div>
+
+        <div class="tool-card">
+            <h3>Calculator</h3>
+            <p>Perform basic and advanced calculations.</p>
+            <button class="btn btn-secondary" disabled>Open Calculator</button>
+        </div>
+
+        <div class="tool-card">
+            <h3>JSON Validator</h3>
+            <p>Validate and format JSON data.</p>
+            <button class="btn btn-secondary" disabled>Open Validator</button>
+        </div>
+
+        <div class="tool-card">
+            <h3>Base64 Encoder/Decoder</h3>
+            <p>Encode and decode Base64 strings.</p>
+            <button class="btn btn-secondary" disabled>Open Tool</button>
+        </div>
+
+        <div class="tool-card">
+            <h3>URL Parser</h3>
+            <p>Parse and analyze URL components.</p>
+            <button class="btn btn-secondary" disabled>Open Parser</button>
+        </div>
+
+        <div class="tool-card">
+            <h3>Timestamp Converter</h3>
+            <p>Convert between different timestamp formats.</p>
+            <button class="btn btn-secondary" disabled>Open Converter</button>
+        </div>
+    </div>
+
+    <div class="info-box">
+        <h3>Basic Tools Access</h3>
+        <p>These tools are available to all authenticated users. No special permissions are required to use these tools.</p>
+    </div>
+</div>
+{% endblock %}
