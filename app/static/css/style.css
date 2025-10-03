@@ -1,0 +1,77 @@
+/* Custom styles for JoResa Tools */
+
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+}
+
+.footer {
+    margin-top: auto;
+}
+
+/* Diff output styling */
+.diff-output {
+    font-family: 'Courier New', monospace;
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 5px;
+    overflow-x: auto;
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+.diff-header {
+    font-weight: bold;
+    color: #6c757d;
+    margin-bottom: 5px;
+}
+
+.diff-range {
+    color: #17a2b8;
+    font-weight: bold;
+    margin: 10px 0 5px 0;
+}
+
+.diff-add {
+    background-color: #d4edda;
+    color: #155724;
+    padding: 2px 5px;
+}
+
+.diff-remove {
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 2px 5px;
+}
+
+.diff-context {
+    color: #495057;
+    padding: 2px 5px;
+}
+
+/* Card hover effects */
+.card {
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Jumbotron styling for homepage */
+.jumbotron {
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    padding: 3rem;
+}
+
+/* Chart containers */
+canvas {
+    max-height: 400px;
+}
