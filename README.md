@@ -63,6 +63,8 @@ python run.py
 http://127.0.0.1:5000
 ```
 
+> **Using PyCharm?** See [PYCHARM_SETUP.md](PYCHARM_SETUP.md) for detailed IDE-specific setup instructions, including debugging and run configurations.
+
 ## Usage
 
 ### First Time Setup

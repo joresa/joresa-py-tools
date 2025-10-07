@@ -13,6 +13,7 @@ Welcome to the JoResa Python Tools documentation! This index will help you find 
 1. **[ARCHITECTURE.md](ARCHITECTURE.md)** - Technical architecture and design
 2. **[DIAGRAMS.md](DIAGRAMS.md)** - Visual system flow diagrams
 3. **[ADDING_TOOLS.md](ADDING_TOOLS.md)** - Guide to creating new tools
+4. **[PYCHARM_SETUP.md](PYCHARM_SETUP.md)** - PyCharm IDE setup and configuration
 
 ### Contributors
 1. **[CONTRIBUTING.md](CONTRIBUTING.md)** - Contribution guidelines
@@ -48,6 +49,7 @@ Welcome to the JoResa Python Tools documentation! This index will help you find 
 | **[ADDING_TOOLS.md](ADDING_TOOLS.md)** | How to add new tools (with examples) | Developers |
 | **[CONTRIBUTING.md](CONTRIBUTING.md)** | Contribution guidelines | Contributors |
 | **[TESTING.md](TESTING.md)** | Testing strategies and checklist | Developers, QA |
+| **[PYCHARM_SETUP.md](PYCHARM_SETUP.md)** | PyCharm IDE setup and usage | Developers |
 
 ### Operations & Deployment
 
@@ -71,6 +73,11 @@ Welcome to the JoResa Python Tools documentation! This index will help you find 
 - Installation instructions
 - First-time setup
 - Running locally
+
+Or use **[PYCHARM_SETUP.md](PYCHARM_SETUP.md)** if using PyCharm IDE
+- PyCharm-specific setup
+- Run configurations
+- Debugging tools
 
 #### Understand the Architecture
 → Go to **[ARCHITECTURE.md](ARCHITECTURE.md)**
@@ -174,6 +181,7 @@ Welcome to the JoResa Python Tools documentation! This index will help you find 
 - **Adding Features**: [ADDING_TOOLS.md](ADDING_TOOLS.md), [CONTRIBUTING.md](CONTRIBUTING.md)
 - **Testing**: [TESTING.md](TESTING.md), [CONTRIBUTING.md](CONTRIBUTING.md)
 - **Git Workflow**: [CONTRIBUTING.md](CONTRIBUTING.md)
+- **IDE Setup**: [PYCHARM_SETUP.md](PYCHARM_SETUP.md)
 
 ### Deployment
 - **Environment Setup**: [DEPLOYMENT.md](DEPLOYMENT.md), [.env.example](.env.example)
@@ -196,10 +204,11 @@ Welcome to the JoResa Python Tools documentation! This index will help you find 
 
 ### Path 2: Junior Developer to Contributor
 1. [README.md](README.md) - Project overview
-2. [ARCHITECTURE.md](ARCHITECTURE.md) - Technical details
-3. [CONTRIBUTING.md](CONTRIBUTING.md) - How to contribute
-4. [ADDING_TOOLS.md](ADDING_TOOLS.md) - Add your first tool
-5. [TESTING.md](TESTING.md) - Test your changes
+2. [QUICKSTART.md](QUICKSTART.md) or [PYCHARM_SETUP.md](PYCHARM_SETUP.md) - Set up your environment
+3. [ARCHITECTURE.md](ARCHITECTURE.md) - Technical details
+4. [CONTRIBUTING.md](CONTRIBUTING.md) - How to contribute
+5. [ADDING_TOOLS.md](ADDING_TOOLS.md) - Add your first tool
+6. [TESTING.md](TESTING.md) - Test your changes
 
 ### Path 3: Zero to Deployed
 1. [README.md](README.md) - Understand the project
@@ -215,11 +224,11 @@ Welcome to the JoResa Python Tools documentation! This index will help you find 
 
 ## 📊 Documentation Statistics
 
-- **Total Documents**: 11
-- **Total Lines**: 2,800+
-- **Total Words**: 25,000+
-- **Estimated Reading Time**: 2-3 hours (all docs)
-- **Code Examples**: 50+
+- **Total Documents**: 12
+- **Total Lines**: 3,200+
+- **Total Words**: 28,000+
+- **Estimated Reading Time**: 2.5-3.5 hours (all docs)
+- **Code Examples**: 55+
 - **Diagrams**: 10+
 
 ## 🔗 External Resources
@@ -240,6 +249,10 @@ Welcome to the JoResa Python Tools documentation! This index will help you find 
 - [Gunicorn Docs](https://gunicorn.org/)
 - [Nginx Docs](https://nginx.org/en/docs/)
 - [PostgreSQL Docs](https://www.postgresql.org/docs/)
+
+### IDE Resources
+- [PyCharm Documentation](https://www.jetbrains.com/pycharm/learn/)
+- [PyCharm Keyboard Shortcuts](https://www.jetbrains.com/help/pycharm/mastering-keyboard-shortcuts.html)
 
 ## 💡 Tips for Reading
 
