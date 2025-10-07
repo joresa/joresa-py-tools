@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="jumbotron text-center py-5">
+            <h1 class="display-4">
+                <i class="bi bi-tools"></i> Welcome to JoResa Tools
+            </h1>
+            <p class="lead">A modular platform for productivity tools with analytics</p>
+            <hr class="my-4">
+            <p>Login to access the dashboard and start using tools</p>
+            {% if not current_user.is_authenticated %}
+            <a class="btn btn-primary btn-lg me-2" href="{{ url_for('auth.login') }}" role="button">
+                <i class="bi bi-box-arrow-in-right"></i> Login
+            </a>
+            <a class="btn btn-success btn-lg" href="{{ url_for('auth.register') }}" role="button">
+                <i class="bi bi-person-plus"></i> Register
+            </a>
+            {% else %}
+            <a class="btn btn-primary btn-lg" href="{{ url_for('main.dashboard') }}" role="button">
+                <i class="bi bi-speedometer2"></i> Go to Dashboard
+            </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <i class="bi bi-file-earmark-diff display-1 text-primary"></i>
+                <h5 class="card-title mt-3">Diff Checker</h5>
+                <p class="card-text">Compare two texts or files and see highlighted changes with complete history tracking.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <i class="bi bi-bar-chart-line display-1 text-success"></i>
+                <h5 class="card-title mt-3">Analytics Dashboard</h5>
+                <p class="card-text">View usage statistics, most used tools, and track your productivity over time.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <i class="bi bi-puzzle display-1 text-info"></i>
+                <h5 class="card-title mt-3">Modular Design</h5>
+                <p class="card-text">Easily extensible architecture allows for adding new tools and features seamlessly.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
