@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h2><i class="bi bi-clock-history"></i> Diff History</h2>
+        <p class="text-muted">Your previous diff comparisons</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                {% if history %}
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Date/Time</th>
+                            <th>Text 1</th>
+                            <th>Text 2</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in history %}
+                        <tr>
+                            <td>{{ item.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                            <td>{{ item.text1_name }}</td>
+                            <td>{{ item.text2_name }}</td>
+                            <td>
+                                <a href="{{ url_for('tools.diff_history_detail', id=item.id) }}" class="btn btn-sm btn-primary">
+                                    <i class="bi bi-eye"></i> View
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle"></i> No history yet. Start by <a href="{{ url_for('tools.diff_checker') }}">comparing some texts</a>!
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-12">
+        <a href="{{ url_for('tools.diff_checker') }}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> New Comparison
+        </a>
+    </div>
+</div>
+{% endblock %}

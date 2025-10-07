@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h2><i class="bi bi-file-earmark-diff"></i> Diff History Detail</h2>
+        <p class="text-muted">{{ history.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card mb-3">
+            <div class="card-header bg-info text-white">
+                <h5>Comparison: {{ history.text1_name }} vs {{ history.text2_name }}</h5>
+            </div>
+            <div class="card-body">
+                <div class="diff-output">
+                    {{ history.diff_result|safe }}
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h5>Original Texts</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>{{ history.text1_name }}</h6>
+                        <pre class="border p-2 bg-light">{{ history.text1_content }}</pre>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>{{ history.text2_name }}</h6>
+                        <pre class="border p-2 bg-light">{{ history.text2_content }}</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-12">
+        <a href="{{ url_for('tools.diff_history') }}" class="btn btn-outline-primary">
+            <i class="bi bi-arrow-left"></i> Back to History
+        </a>
+        <a href="{{ url_for('tools.diff_checker') }}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> New Comparison
+        </a>
+    </div>
+</div>
+{% endblock %}

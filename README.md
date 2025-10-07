@@ -1,23 +1,35 @@
-# joresa-py-tools
+# JoResa Python Tools
 
-A dashboard application for managing and tracking Python tools with usage analytics.
+A modular web-based platform for productivity tools with user authentication, analytics dashboard, and extensible architecture.
 
 ## Features
 
-- **Dashboard Landing Page**: Displays all available tools with descriptions and launch statistics
-- **Usage Analytics**: 
-  - Chart showing most used tools
-  - Department usage breakdown with pie chart
-  - Timeline view of tool launches over time
-- **Quick Stats**: 
-  - Most used tool this week
-  - Total launches
-  - Average daily usage
-  - Active users count
-  - Available tools count
-- **User Analytics**: View tool usage by individual users
+- **User Authentication**: Secure login and registration system
+- **Dashboard**: Clean interface showing available tools and recent activity
+- **Analytics Dashboard**: View usage statistics with interactive charts
+  - Most used tools
+  - Usage by date
+  - Usage by user
+- **Diff Checker Tool**: Compare two texts/files with highlighted changes
+  - History tracking per user
+  - Side-by-side comparison view
+  - Detailed diff history
+- **Modular Architecture**: Easy to add new tools
+
+## Technologies Used
+
+- **Backend**: Flask, SQLAlchemy, Flask-Login
+- **Frontend**: Bootstrap 5, Chart.js
+- **Database**: SQLite (easily upgradable to PostgreSQL/MySQL)
 
 ## Installation
+
+### Prerequisites
+
+- Python 3.8 or higher
+- pip (Python package manager)
+
+### Setup Instructions
 
 1. Clone the repository:
 ```bash
@@ -25,52 +37,152 @@ git clone https://github.com/joresa/joresa-py-tools.git
 cd joresa-py-tools
 ```
 
-2. Install dependencies:
+2. Create a virtual environment:
+```bash
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+```
+
+3. Install dependencies:
 ```bash
 pip install -r requirements.txt
 ```
 
-## Running the Application
-
-Start the Flask development server:
+4. Initialize the database:
 ```bash
-python app.py
+python init_db.py
 ```
 
-The dashboard will be available at: http://localhost:5000
+5. Run the application:
+```bash
+python run.py
+```
+
+6. Open your browser and navigate to:
+```
+http://127.0.0.1:5000
+```
 
 ## Usage
 
-1. Open your browser and navigate to http://localhost:5000
-2. Browse available tools in the "Available Tools" section
-3. Click on any tool card to launch it (demo mode shows an alert)
-4. View usage analytics in the charts below
-5. Switch between "By Date" and "By User" tabs to see different timeline views
+### First Time Setup
 
-## API Endpoints
+1. Register a new account from the homepage
+2. Login with your credentials
+3. Access the dashboard to see available tools
 
-- `GET /` - Dashboard home page
-- `GET /api/tools` - List all available tools
-- `GET /api/analytics/top-tools` - Get most used tools
-- `GET /api/analytics/timeline` - Get usage timeline by date
-- `GET /api/analytics/by-department` - Get usage by department
-- `GET /api/analytics/by-user` - Get usage by user
-- `GET /api/analytics/quick-stats` - Get quick statistics
+### Diff Checker Tool
+
+1. Navigate to Tools > Diff Checker from the navigation bar
+2. Enter two texts in the left and right panels (optional: name them)
+3. Click "Compare" to see the differences highlighted
+4. View your comparison history by clicking "View History"
+
+### Analytics Dashboard
+
+- Access from the main navigation bar
+- View interactive charts showing:
+  - Most used tools (last 30 days)
+  - Usage trends over time
+  - Top users by activity
 
 ## Project Structure
 
 ```
 joresa-py-tools/
-├── app.py                 # Flask application with API endpoints
-├── templates/
-│   └── dashboard.html     # Dashboard UI with charts
-├── requirements.txt       # Python dependencies
-└── README.md             # This file
+├── app/
+│   ├── __init__.py          # App factory and initialization
+│   ├── models.py            # Database models
+│   ├── auth/                # Authentication blueprint
+│   │   ├── __init__.py
+│   │   ├── forms.py
+│   │   └── routes.py
+│   ├── main/                # Main blueprint (dashboard, analytics)
+│   │   ├── __init__.py
+│   │   └── routes.py
+│   ├── tools/               # Tools blueprint
+│   │   ├── __init__.py
+│   │   ├── forms.py
+│   │   └── routes.py
+│   ├── templates/           # HTML templates
+│   │   ├── base.html
+│   │   ├── index.html
+│   │   ├── auth/
+│   │   ├── main/
+│   │   └── tools/
+│   └── static/              # Static files (CSS, JS)
+│       ├── css/
+│       └── js/
+├── instance/                # Instance folder (SQLite DB)
+├── config.py                # Configuration settings
+├── run.py                   # Application entry point
+├── init_db.py              # Database initialization script
+├── requirements.txt         # Python dependencies
+└── README.md               # This file
 ```
 
-## Technologies Used
+## Adding New Tools
 
-- **Backend**: Flask (Python web framework)
-- **Frontend**: HTML, CSS, JavaScript
-- **Charts**: Chart.js for data visualization
-- **CORS**: Flask-CORS for cross-origin requests
+The system is designed to be modular and extensible. To add a new tool:
+
+1. Create a new route in `app/tools/routes.py`:
+```python
+@bp.route('/your-tool', methods=['GET', 'POST'])
+@login_required
+def your_tool():
+    # Record tool usage
+    record_tool_usage('your_tool')
+    
+    # Your tool logic here
+    return render_template('tools/your_tool.html')
+```
+
+2. Create a template in `app/templates/tools/your_tool.html`
+
+3. Add the tool to the database using `init_db.py` or through the Python shell:
+```python
+from app import create_app, db
+from app.models import Tool
+
+app = create_app()
+with app.app_context():
+    tool = Tool(
+        name='your_tool',
+        display_name='Your Tool',
+        description='Description of your tool',
+        icon='bi-icon-name',
+        route='/tools/your-tool',
+        is_active=True
+    )
+    db.session.add(tool)
+    db.session.commit()
+```
+
+## Future Tool Ideas
+
+- Claims task manager
+- Workflow helpers
+- Document converter
+- Text analyzer
+- Code formatter
+
+## Configuration
+
+Edit `config.py` to customize:
+- Secret key
+- Database URI
+- Session lifetime
+
+For production, set environment variables:
+```bash
+export SECRET_KEY='your-secret-key'
+export DATABASE_URL='postgresql://user:pass@localhost/dbname'
+```
+
+## License
+
+This project is open source and available under the MIT License.
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.

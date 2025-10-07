@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h2><i class="bi bi-speedometer2"></i> Dashboard</h2>
+        <p class="text-muted">Welcome back, {{ current_user.username }}!</p>
+    </div>
+</div>
+
+<!-- Quick Stats Section -->
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h4><i class="bi bi-graph-up"></i> Quick Stats (This Week)</h4>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-4 mb-3">
+        <div class="card text-white bg-primary h-100">
+            <div class="card-body">
+                <h5 class="card-title"><i class="bi bi-trophy"></i> Most Used Tool</h5>
+                <h3 class="mb-0">{{ quick_stats.most_used_tool }}</h3>
+                <small>{{ quick_stats.most_used_count }} launches</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-3">
+        <div class="card text-white bg-success h-100">
+            <div class="card-body">
+                <h5 class="card-title"><i class="bi bi-rocket-takeoff"></i> Total Launches</h5>
+                <h3 class="mb-0">{{ quick_stats.total_launches }}</h3>
+                <small>This week</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-3">
+        <div class="card text-white bg-info h-100">
+            <div class="card-body">
+                <h5 class="card-title"><i class="bi bi-people"></i> Active Users</h5>
+                <h3 class="mb-0">{{ quick_stats.active_users }}</h3>
+                <small>Unique this week</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-6 mb-3">
+        <div class="card text-white bg-warning h-100">
+            <div class="card-body">
+                <h5 class="card-title"><i class="bi bi-graph-up-arrow"></i> Avg Daily Usage</h5>
+                <h3 class="mb-0">{{ quick_stats.avg_daily_usage }}</h3>
+                <small>Launches per day</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 mb-3">
+        <div class="card text-white bg-secondary h-100">
+            <div class="card-body">
+                <h5 class="card-title"><i class="bi bi-tools"></i> Available Tools</h5>
+                <h3 class="mb-0">{{ quick_stats.available_tools }}</h3>
+                <small>Ready to use</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h4><i class="bi bi-tools"></i> Available Tools</h4>
+    </div>
+</div>
+
+<div class="row">
+    {% for tool in tools %}
+    <div class="col-md-4 mb-3">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="bi {{ tool.icon or 'bi-gear' }}"></i> {{ tool.display_name }}
+                </h5>
+                <p class="card-text">{{ tool.description }}</p>
+                <a href="{{ tool.route }}" class="btn btn-primary">
+                    <i class="bi bi-arrow-right-circle"></i> Open Tool
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% if recent_usage %}
+<div class="row mt-4">
+    <div class="col-md-12">
+        <h4><i class="bi bi-clock-history"></i> Recent Activity</h4>
+        <div class="card">
+            <div class="card-body">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Tool</th>
+                            <th>Date/Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for usage in recent_usage %}
+                        <tr>
+                            <td><i class="bi {{ usage.tool.icon or 'bi-gear' }}"></i> {{ usage.tool.display_name }}</td>
+                            <td>{{ usage.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
