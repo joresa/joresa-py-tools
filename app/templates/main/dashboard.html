@@ -10,17 +10,19 @@
 
 <div class="row mb-4">
     <div class="col-md-12">
-        <h4>Available Tools</h4>
+        <h4>Most Used Tools</h4>
     </div>
 </div>
 
 <div class="row">
-    {% for tool in tools %}
+    {% if most_used_tools_with_counts %}
+    {% for tool, count in most_used_tools_with_counts %}
     <div class="col-md-4 mb-3">
         <div class="card h-100 shadow-sm">
             <div class="card-body">
                 <h5 class="card-title">
                     <i class="bi {{ tool.icon or 'bi-gear' }}"></i> {{ tool.display_name }}
+                    <span class="badge bg-secondary ms-2">{{ count }}</span>
                 </h5>
                 <p class="card-text">{{ tool.description }}</p>
                 <a href="{{ tool.route }}" class="btn btn-primary">
@@ -30,6 +32,11 @@
         </div>
     </div>
     {% endfor %}
+    {% else %}
+    <div class="col-12">
+        <p class="text-muted">No usage data yet. Tools will appear here once they are used.</p>
+    </div>
+    {% endif %}
 </div>
 
 {% if recent_usage %}
@@ -42,6 +49,7 @@
                     <thead>
                         <tr>
                             <th>Tool</th>
+                            <th>User</th>
                             <th>Date/Time</th>
                         </tr>
                     </thead>
@@ -49,6 +57,7 @@
                         {% for usage in recent_usage %}
                         <tr>
                             <td><i class="bi {{ usage.tool.icon or 'bi-gear' }}"></i> {{ usage.tool.display_name }}</td>
+                            <td>{{ usage.user.username }}</td>
                             <td>{{ usage.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
                         </tr>
                         {% endfor %}

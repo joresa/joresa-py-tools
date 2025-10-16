@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h2>Manage Categories</h2>
+        <a class="btn btn-primary" href="{{ url_for('main.categories_new') }}">New Category</a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Display</th>
+                            <th>Parent</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for c in categories %}
+                        <tr>
+                            <td>{{ c.name }}</td>
+                            <td>{{ c.display_name }}</td>
+                            <td>{{ c.parent.display_name if c.parent else '' }}</td>
+                            <td>
+                                <a class="btn btn-sm btn-outline-primary"
+                                    href="{{ url_for('main.categories_edit', id=c.id) }}">Edit</a>
+                                <form action="{{ url_for('main.categories_delete', id=c.id) }}" method="post"
+                                    style="display:inline-block">
+                                    <button class="btn btn-sm btn-outline-danger" type="submit">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
