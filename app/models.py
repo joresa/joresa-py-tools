@@ -36,10 +36,31 @@ class Tool(db.Model):
     is_active = db.Column(db.Boolean, default=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
+    # Optional category association
+    category_id = db.Column(db.Integer, db.ForeignKey('category.id'), nullable=True)
+    category = db.relationship('Category', back_populates='tools')
+
     usages = db.relationship('ToolUsage', backref='tool', lazy='dynamic')
 
     def __repr__(self):
         return f'<Tool {self.name}>'
+
+class Category(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64), unique=True, nullable=False)
+    display_name = db.Column(db.String(128))
+    parent_id = db.Column(db.Integer, db.ForeignKey('category.id'), nullable=True)
+    # Child categories ordered A-Z by display_name
+    children = db.relationship(
+        'Category',
+        backref=db.backref('parent', remote_side=[id]),
+        order_by='Category.display_name'
+    )
+    # Tools under this category ordered A-Z by display_name
+    tools = db.relationship('Tool', back_populates='category', order_by='Tool.display_name')
+
+    def __repr__(self):
+        return f'<Category {self.name}>'
 
 class ToolUsage(db.Model):
     id = db.Column(db.Integer, primary_key=True)

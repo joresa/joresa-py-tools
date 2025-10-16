@@ -1,10 +1,13 @@
-from flask import render_template, jsonify
+from flask import render_template, jsonify, request, redirect, flash, url_for
 from flask_login import login_required, current_user
 from sqlalchemy import func, desc
+from sqlalchemy.orm import joinedload
+from sqlalchemy.orm import selectinload
 from datetime import datetime, timedelta
 from app import db
 from app.main import bp
-from app.models import Tool, ToolUsage, User
+from app.models import Tool, ToolUsage, User, Category
+from app.main.forms import CategoryForm, ToolAssignForm
 
 @bp.route('/')
 def index():
@@ -14,17 +17,28 @@ def index():
 @login_required
 def dashboard():
     tools = Tool.query.filter_by(is_active=True).all()
+    # Load categories with tools
+    categories = Category.query.options(selectinload(Category.tools), selectinload(Category.children)).order_by(Category.display_name).all()
     
-    # Get user's recent activity
-    recent_usage = ToolUsage.query.filter_by(user_id=current_user.id)\
-        .order_by(desc(ToolUsage.timestamp))\
-        .limit(5)\
-        .all()
+    # Get recent activity across users (most recent usages)
+    recent_usage = ToolUsage.query.options(
+        joinedload(ToolUsage.tool),
+        joinedload(ToolUsage.user)
+    ).order_by(desc(ToolUsage.timestamp)).limit(10).all()
+
+    # Compute top 10 most used tools (by usage count)
+    results = db.session.query(
+        Tool,
+        func.count(ToolUsage.id).label('count')
+    ).join(ToolUsage).group_by(Tool.id).order_by(desc('count')).limit(10).all()
+    most_used_tools_with_counts = [(r[0], r[1]) for r in results]
     
     return render_template('main/dashboard.html', 
                          title='Dashboard', 
                          tools=tools,
-                         recent_usage=recent_usage)
+                         categories=categories,
+                         recent_usage=recent_usage,
+                         most_used_tools_with_counts=most_used_tools_with_counts)
 
 @bp.route('/analytics')
 @login_required
@@ -80,3 +94,76 @@ def api_usage_by_user():
         'labels': [r[0] for r in results],
         'data': [r[1] for r in results]
     })
+
+@bp.route('/settings/categories')
+@login_required
+def categories_list():
+    categories = Category.query.order_by(Category.display_name).all()
+    return render_template('main/categories_list.html', title='Manage Categories', categories=categories)
+
+@bp.route('/settings/categories/new', methods=['GET', 'POST'])
+@login_required
+def categories_new():
+    form = CategoryForm()
+    # populate parent choices
+    parents = [(0, 'None')] + [(c.id, c.display_name or c.name) for c in Category.query.order_by(Category.display_name).all()]
+    form.parent_id.choices = parents
+    if form.validate_on_submit():
+        cat = Category(name=form.name.data, display_name=form.display_name.data, parent_id=form.parent_id.data or None)
+        db.session.add(cat)
+        db.session.commit()
+        flash('Category created', 'success')
+        return redirect(url_for('main.categories_list'))
+    return render_template('main/category_form.html', title='New Category', form=form)
+
+@bp.route('/settings/categories/<int:id>/edit', methods=['GET', 'POST'])
+@login_required
+def categories_edit(id):
+    cat = Category.query.get_or_404(id)
+    form = CategoryForm(obj=cat)
+    parents = [(0, 'None')] + [(c.id, c.display_name or c.name) for c in Category.query.order_by(Category.display_name).all() if c.id != id]
+    form.parent_id.choices = parents
+    if form.validate_on_submit():
+        cat.name = form.name.data
+        cat.display_name = form.display_name.data
+        cat.parent_id = form.parent_id.data or None
+        db.session.commit()
+        flash('Category updated', 'success')
+        return redirect(url_for('main.categories_list'))
+    return render_template('main/category_form.html', title='Edit Category', form=form)
+
+@bp.route('/settings/categories/<int:id>/delete', methods=['POST'])
+@login_required
+def categories_delete(id):
+    cat = Category.query.get_or_404(id)
+    db.session.delete(cat)
+    db.session.commit()
+    flash('Category deleted', 'success')
+    return redirect(url_for('main.categories_list'))
+
+@bp.route('/settings/tools')
+@login_required
+def tools_manage():
+    # list all tools and allow assigning category via form
+    tools = Tool.query.order_by(Tool.display_name).all()
+    categories = Category.query.order_by(Category.display_name).all()
+    form = ToolAssignForm()
+    form.category_id.choices = [('', 'Unassigned')] + [(c.id, c.display_name or c.name) for c in categories]
+    return render_template('main/tools_manage.html', title='Manage Tools', tools=tools, categories=categories, form=form)
+
+@bp.route('/settings/tools/<int:id>/assign', methods=['POST'])
+@login_required
+def tools_assign(id):
+    tool = Tool.query.get_or_404(id)
+    form = ToolAssignForm()
+    categories = Category.query.order_by(Category.display_name).all()
+    form.category_id.choices = [('', 'Unassigned')] + [(c.id, c.display_name or c.name) for c in categories]
+    # Use request.form directly because form may not validate when empty
+    cat_value = request.form.get('category_id')
+    if cat_value:
+        tool.category_id = int(cat_value)
+    else:
+        tool.category_id = None
+    db.session.commit()
+    flash('Tool assignment updated', 'success')
+    return redirect(url_for('main.tools_manage'))

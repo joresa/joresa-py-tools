@@ -26,6 +26,29 @@ def create_app(config_class=Config):
     with app.app_context():
         db.create_all()
 
+    @app.context_processor
+    def inject_categories():
+        # Provide categories and their tools for navigation
+        try:
+            from app.models import Category
+            from sqlalchemy import func
+            from sqlalchemy.orm import selectinload
+            # Only top-level categories (parent_id is NULL), eager-load children and tools
+            cats = Category.query.options(selectinload(Category.children), selectinload(Category.tools))\
+                .filter(Category.parent_id == None)\
+                .order_by(func.lower(func.coalesce(Category.display_name, Category.name)))\
+                .all()
+            # Filter out categories that have no tools and whose children also have no tools
+            visible = []
+            for c in cats:
+                has_tools = bool(c.tools)
+                has_child_tools = any(bool(child.tools) for child in c.children)
+                if has_tools or has_child_tools:
+                    visible.append(c)
+            return {'nav_categories': visible}
+        except Exception:
+            return {'nav_categories': []}
+
     return app
 
 from app import models
