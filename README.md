@@ -181,6 +181,81 @@ export SECRET_KEY='your-secret-key'
 export DATABASE_URL='postgresql://user:pass@localhost/dbname'
 ```
 
+## Local macOS (zsh) Quick Setup
+
+If you're on macOS using zsh, run these commands from the project root to create a virtual environment, install dependencies, initialize the database, and run the app:
+
+```bash
+# 1. Create and activate virtual environment
+python3 -m venv venv
+source venv/bin/activate
+
+# 2. Upgrade pip (optional but recommended)
+python -m pip install --upgrade pip
+
+# 3. Install dependencies
+pip install -r requirements.txt
+
+# 4. Ensure the instance folder exists (SQLite DB will be created here)
+mkdir -p instance
+
+# 5. Initialize the database and seed initial data
+python init_db.py
+
+# 6. Run the development server
+python run.py
+```
+
+Notes:
+- The development server runs by default at http://127.0.0.1:5000 and uses Flask's debugger in debug mode. Do not use the development server in production.
+- To run with a specific database in development, set the DATABASE_URL environment variable before starting the app, for example:
+
+```bash
+export DATABASE_URL='sqlite:////absolute/path/to/instance/app.db'
+export SECRET_KEY='replace-with-a-secret'
+python run.py
+```
+
+- To stop the server, focus its terminal and press CTRL+C. To run the server in the background, consider using a process manager (systemd, launchd, or a WSGI server like gunicorn) for production deployments.
+
+## Pushing changes (Git) — Recommended workflow
+
+Use the following steps to create a branch, commit your changes, and push to GitHub (macOS / zsh):
+
+```bash
+# Create a new feature branch off main
+git checkout -b feature/short-description
+
+# Work locally, then stage and commit changes
+git add .
+git commit -m "feat: short description of change"
+
+# Push the new branch and set upstream
+git push -u origin feature/short-description
+
+# Open a Pull Request on GitHub from your branch to main
+# (request reviews, run CI, and merge when ready)
+
+# Keep your branch up to date while working
+git fetch origin
+# rebase onto latest main
+git rebase origin/main
+# or, alternatively
+git pull --rebase origin main
+
+# After the PR is merged, clean up local and remote branches
+git checkout main
+git pull origin main
+git branch -d feature/short-description
+git push origin --delete feature/short-description
+```
+
+Tips:
+- Use clear, focused commits and descriptive branch names (e.g. feature/add-diff-export).
+- Prefer small PRs for easier review.
+- Run tests, linters, and the local app (see Local macOS Quick Setup) before opening a PR.
+- Consider using conventional commit prefixes (feat:, fix:, docs:, chore:) to simplify changelogs.
+
 ## License
 
 This project is open source and available under the MIT License.
