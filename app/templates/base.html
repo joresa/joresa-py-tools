@@ -66,6 +66,17 @@
                                     </ul>
                                 </div>
                                 {% endfor %}
+                                {% if nav_unassigned_tools %}
+                                <div class="mb-3">
+                                    <div class="fw-bold">Unassigned</div>
+                                    <ul class="list-unstyled ms-2 mb-1">
+                                        {% for ut in nav_unassigned_tools %}
+                                        <li><a class="dropdown-item" href="{{ ut.route }}">{{ ut.display_name }}</a>
+                                        </li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                                {% endif %}
                             </div>
                         </div>
                     </li>

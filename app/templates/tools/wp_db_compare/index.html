@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+    <h2>WP SQL DB Compare — Upload SQL Dumps</h2>
+    <form action="{{ url_for('tools.wp_db_compare_compare') }}" method="post" enctype="multipart/form-data">
+        <div class="mb-3">
+            <label for="file_a">Source A (.sql)</label>
+            <input type="file" name="file_a" id="file_a" class="form-control" accept=".sql" required>
+        </div>
+        <div class="mb-3">
+            <label for="file_b">Source B (.sql)</label>
+            <input type="file" name="file_b" id="file_b" class="form-control" accept=".sql" required>
+        </div>
+        <div class="mb-3">
+            <label>Tables to compare</label>
+            <div id="detected-tables">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="tables" value="wp_posts" id="t_posts" checked>
+                    <label class="form-check-label" for="t_posts">wp_posts</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="tables" value="wp_options" id="t_options"
+                        checked>
+                    <label class="form-check-label" for="t_options">wp_options</label>
+                </div>
+            </div>
+            <div class="mt-2">
+                <button id="scan-db" type="button" class="btn btn-sm btn-outline-secondary">Detect tables from uploaded
+                    dumps</button>
+            </div>
+        </div>
+        <button class="btn btn-primary">Start Compare</button>
+    </form>
+</div>
+
+<script>
+    // Client-side detection of table names from uploaded SQL dump files.
+    (function () {
+        const container = document.getElementById('detected-tables');
+        function populateDetected(tables) {
+            container.innerHTML = '';
+            tables.forEach(function (t) {
+                const id = 't_' + t.replace(/[^a-z0-9_]/gi, '_');
+                const div = document.createElement('div');
+                div.className = 'form-check';
+                div.innerHTML = `<input class="form-check-input" type="checkbox" name="tables" value="${t}" id="${id}" checked> <label class="form-check-label" for="${id}">${t}</label>`;
+                container.appendChild(div);
+            });
+        }
+
+        function readFileText(file) {
+            return new Promise(function (resolve, reject) {
+                const r = new FileReader();
+                r.onload = function () { resolve(r.result || ''); };
+                r.onerror = function () { reject(new Error('read error')); };
+                r.readAsText(file);
+            });
+        }
+
+        function detectTablesFromText(txt) {
+            const out = [];
+            if (!txt) return out;
+            const insertRe = /INSERT\s+INTO\s+[`"]?(\w+)[`"]?/ig;
+            const createRe = /CREATE\s+TABLE\s+[`"]?(\w+)[`"]?/ig;
+            let m;
+            while ((m = insertRe.exec(txt)) !== null) { out.push(m[1]); }
+            while ((m = createRe.exec(txt)) !== null) { out.push(m[1]); }
+            return out;
+        }
+
+        document.getElementById('scan-db').addEventListener('click', function () {
+            const fa = document.getElementById('file_a');
+            const fb = document.getElementById('file_b');
+            if (fa.files.length && fb.files.length) {
+                Promise.all([readFileText(fa.files[0]), readFileText(fb.files[0])]).then(function (results) {
+                    const t1 = detectTablesFromText(results[0]);
+                    const t2 = detectTablesFromText(results[1]);
+                    const combined = Array.from(new Set(t1.concat(t2))).sort();
+                    if (combined.length === 0) {
+                        alert('No tables detected in the provided dumps. You can still enter table names manually or scan the app DB as a fallback.');
+                        return;
+                    }
+                    populateDetected(combined);
+                }).catch(function () {
+                    alert('Failed to read uploaded files for detection.');
+                });
+            } else {
+                // Fallback: scan the application's configured DB (server-side)
+                fetch("{{ url_for('tools.wp_db_compare_scan_db') }}")
+                    .then(r => r.json())
+                    .then(js => {
+                        if (js.tables && js.tables.length) {
+                            populateDetected(js.tables);
+                        } else {
+                            alert('No tables found in application DB.');
+                        }
+                    }).catch(function () { alert('Failed to scan application DB.'); });
+            }
+        });
+    })();
+</script>
+{% endblock %}

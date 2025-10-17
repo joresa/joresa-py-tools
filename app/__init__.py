@@ -30,7 +30,7 @@ def create_app(config_class=Config):
     def inject_categories():
         # Provide categories and their tools for navigation
         try:
-            from app.models import Category
+            from app.models import Category, Tool
             from sqlalchemy import func
             from sqlalchemy.orm import selectinload
             # Only top-level categories (parent_id is NULL), eager-load children and tools
@@ -45,9 +45,13 @@ def create_app(config_class=Config):
                 has_child_tools = any(bool(child.tools) for child in c.children)
                 if has_tools or has_child_tools:
                     visible.append(c)
-            return {'nav_categories': visible}
+
+            # Also expose unassigned tools (helpful so users can assign a category from Manage Tools and access the tool immediately)
+            unassigned_tools = Tool.query.filter(Tool.category_id == None, Tool.is_active == True).order_by(func.lower(func.coalesce(Tool.display_name, Tool.name))).all()
+
+            return {'nav_categories': visible, 'nav_unassigned_tools': unassigned_tools}
         except Exception:
-            return {'nav_categories': []}
+            return {'nav_categories': [], 'nav_unassigned_tools': []}
 
     return app
 
