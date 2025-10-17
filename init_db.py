@@ -46,6 +46,22 @@ def init_db():
         else:
             print("Tools already exist in database.")
 
+        # Ensure wp_db_compare tool exists (so it's visible in Manage Tools)
+        if Tool.query.filter_by(name='wp_db_compare').count() == 0:
+            wp_tool = Tool(
+                name='wp_db_compare',
+                display_name='WP SQL DB Compare',
+                description='Compare two WordPress SQL dumps and produce a preview SQL patch.',
+                icon='bi-database',
+                route='/tools/wp-db-compare',
+                is_active=True
+            )
+            db.session.add(wp_tool)
+            db.session.commit()
+            print('Seeded wp_db_compare tool')
+        else:
+            print('wp_db_compare tool already present')
+
         # Seed categories if not present
         if Category.query.count() == 0:
             general = Category(name='general', display_name='General')
