@@ -17,3 +17,11 @@ class RuleCardForm(FlaskForm):
         ('jira_html', 'Jira HTML (IDs bold)')
     ], default='bulleted')
     submit = SubmitField('Format')
+
+class MongoCompareForm(FlaskForm):
+    uri_a = StringField('Mongo URI A', validators=[DataRequired()])
+    uri_b = StringField('Mongo URI B', validators=[DataRequired()])
+    db_name = StringField('Database name', validators=[DataRequired()])
+    collections = StringField('Collections (comma-separated or leave empty for all)')
+    doc_limit = StringField('Document limit per collection', default='1000')
+    submit = SubmitField('Compare')
