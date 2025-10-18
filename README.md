@@ -7,13 +7,13 @@ Welcome to the JoResa Python Tools documentation! This index will help you find 
 ### New Users
 1. **[README.md](README.md)** - Start here for overview and installation
 2. **[QUICKSTART.md](docs/guides/quickstart.md)** - Step-by-step first-time setup guide
-3. **[SUMMARY.md](SUMMARY.md)** - Complete project overview and statistics
+3. **[SUMMARY.md](docs/archive/SUMMARY.md)** - Complete project overview and statistics
 
 ### Developers
 1. **[ARCHITECTURE.md](docs/architecture/architecture.md)** - Technical architecture and design
-2. **[DIAGRAMS.md](DIAGRAMS.md)** - Visual system flow diagrams
-3. **[ADDING_TOOLS.md](ADDING_TOOLS.md)** - Guide to creating new tools
-4. **[PYCHARM_SETUP.md](PYCHARM_SETUP.md)** - PyCharm IDE setup and configuration
+2. **[DIAGRAMS.md](docs/archive/DIAGRAMS.md)** - Visual system flow diagrams
+3. **[ADDING_TOOLS.md](docs/contributing/adding-tools.md)** - Guide to creating new tools
+4. **[PYCHARM_SETUP.md](docs/guides/pycharm-setup.md)** - PyCharm IDE setup and configuration
 
 ### Contributors
 1. **[CONTRIBUTING.md](CONTRIBUTING.md)** - Contribution guidelines
@@ -32,24 +32,24 @@ Welcome to the JoResa Python Tools documentation! This index will help you find 
 |----------|---------|----------|
 | **[README.md](README.md)** | Project overview, features, setup | Everyone |
 | **[QUICKSTART.md](docs/guides/quickstart.md)** | Getting started guide | New users |
-| **[SUMMARY.md](SUMMARY.md)** | Project statistics and overview | Managers, stakeholders |
+| **[SUMMARY.md](docs/archive/SUMMARY.md)** | Project statistics and overview | Managers, stakeholders |
 
 ### Technical Documentation
 
 | Document | Purpose | Audience |
 |----------|---------|----------|
 | **[ARCHITECTURE.md](docs/architecture/architecture.md)** | System architecture, models, blueprints | Developers |
-| **[DIAGRAMS.md](DIAGRAMS.md)** | Visual flows and diagrams | Developers, architects |
+| **[DIAGRAMS.md](docs/archive/DIAGRAMS.md)** | Visual flows and diagrams | Developers, architects |
 | **[DESIGN.md](docs/design/visual-design.md)** | UI/UX design system | Frontend developers |
 
 ### Development Guides
 
 | Document | Purpose | Audience |
 |----------|---------|----------|
-| **[ADDING_TOOLS.md](ADDING_TOOLS.md)** | How to add new tools (with examples) | Developers |
+| **[ADDING_TOOLS.md](docs/contributing/adding-tools.md)** | How to add new tools (with examples) | Developers |
 | **[CONTRIBUTING.md](CONTRIBUTING.md)** | Contribution guidelines | Contributors |
 | **[TESTING.md](docs/testing/testing.md)** | Testing strategies and checklist | Developers, QA |
-| **[PYCHARM_SETUP.md](PYCHARM_SETUP.md)** | PyCharm IDE setup and usage | Developers |
+| **[PYCHARM_SETUP.md](docs/guides/pycharm-setup.md)** | PyCharm IDE setup and usage | Developers |
 
 ### Operations & Deployment
 
@@ -74,7 +74,7 @@ Welcome to the JoResa Python Tools documentation! This index will help you find 
 - First-time setup
 - Running locally
 
-Or use **[PYCHARM_SETUP.md](PYCHARM_SETUP.md)** if using PyCharm IDE
+Or use **[PYCHARM_SETUP.md](docs/guides/pycharm-setup.md)** if using PyCharm IDE
 - PyCharm-specific setup
 - Run configurations
 - Debugging tools
@@ -87,14 +87,14 @@ Or use **[PYCHARM_SETUP.md](PYCHARM_SETUP.md)** if using PyCharm IDE
 - Technology stack
 
 #### See How It Works Visually
-→ Go to **[DIAGRAMS.md](DIAGRAMS.md)**
+→ Go to **[DIAGRAMS.md](docs/archive/DIAGRAMS.md)**
 - User journey flow
 - System architecture diagram
 - Data flow diagrams
 - Tool addition flow
 
 #### Add a New Tool
-→ Go to **[ADDING_TOOLS.md](ADDING_TOOLS.md)**
+→ Go to **[ADDING_TOOLS.md](docs/contributing/adding-tools.md)**
 - Complete step-by-step guide
 - Full code examples
 - Text analyzer example
@@ -131,7 +131,7 @@ Or use **[PYCHARM_SETUP.md](PYCHARM_SETUP.md)** if using PyCharm IDE
 - Custom CSS classes
 
 #### Get Project Statistics
-→ Go to **[SUMMARY.md](SUMMARY.md)**
+→ Go to **[SUMMARY.md](docs/archive/SUMMARY.md)**
 - File counts
 - Lines of code
 - Features implemented
@@ -145,7 +145,7 @@ Or use **[PYCHARM_SETUP.md](PYCHARM_SETUP.md)** if using PyCharm IDE
 ## 📖 Documentation by Length
 
 ### Quick Reads (< 5 minutes)
-- [SUMMARY.md](SUMMARY.md) - Project overview
+- [SUMMARY.md](docs/archive/SUMMARY.md) - Project overview
 - [LICENSE](LICENSE) - License information
 - [.env.example](.env.example) - Config template
 
@@ -157,10 +157,10 @@ Or use **[PYCHARM_SETUP.md](PYCHARM_SETUP.md)** if using PyCharm IDE
 - [DESIGN.md](docs/design/visual-design.md) - Design system
 
 ### Deep Dives (15+ minutes)
-- [ADDING_TOOLS.md](ADDING_TOOLS.md) - Tool creation
+- [ADDING_TOOLS.md](docs/contributing/adding-tools.md) - Tool creation
 - [TESTING.md](docs/testing/testing.md) - Testing guide
 - [DEPLOYMENT.md](docs/deployment/deploy.md) - Deployment guide
-- [DIAGRAMS.md](DIAGRAMS.md) - Visual diagrams
+- [DIAGRAMS.md](docs/archive/DIAGRAMS.md) - Visual diagrams
 
 ## 🔗 External Resources
 
@@ -195,7 +195,7 @@ Or use **[PYCHARM_SETUP.md](PYCHARM_SETUP.md)** if using PyCharm IDE
 
 ## 🆘 Still Can't Find What You Need?
 
-1. Check the **[SUMMARY.md](SUMMARY.md)** for overview
+1. Check the **[SUMMARY.md](docs/archive/SUMMARY.md)** for overview
 2. Search within documentation files
 3. Check code comments in the repository
 4. Open a GitHub Discussion
