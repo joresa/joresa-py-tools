@@ -1,0 +1,169 @@
+:root {
+    --bg: #0f1720;
+    --panel: #111827;
+    --muted: #9aa4ae;
+    --accent: #0ea5a4;
+    --card: #0b1220;
+}
+
+.wp-compare-app {
+    padding: 18px
+}
+
+.panel {
+    background: var(--panel);
+    border-radius: 8px;
+    padding: 12px;
+    color: #e6eef6;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.6)
+}
+
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px
+}
+
+.panel-title {
+    font-weight: 600
+}
+
+.file-drop {
+    display: block;
+    border: 2px dashed rgba(255, 255, 255, 0.04);
+    padding: 18px;
+    border-radius: 8px;
+    cursor: pointer
+}
+
+.file-drop .drop-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px
+}
+
+/* improve file name readability inside file-drop */
+.file-drop .file-info {
+    color: rgba(230, 238, 246, 0.75);
+    /* higher contrast than muted */
+    font-size: 0.85rem;
+    margin-top: 6px;
+    max-width: 100%;
+    display: block;
+    white-space: normal;
+    /* allow wrapping so long names are readable */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.15;
+    text-align: center;
+}
+
+.table-list {
+    margin-top: 8px
+}
+
+.table-list-body {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px 12px;
+    max-height: 220px;
+    /* slightly larger to fit extra column rows */
+    overflow: auto;
+    overflow-x: hidden;
+    /* prevent horizontal scroll */
+    padding: 8px;
+    border-radius: 6px;
+    background: rgba(0, 0, 0, 0.06)
+}
+
+/* Use three columns on very wide screens */
+@media (min-width: 1400px) {
+    .table-list-body {
+        grid-template-columns: 1fr 1fr 1fr;
+    }
+}
+
+.table-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 4px;
+    /* compact */
+    border-bottom: none;
+    font-size: 0.78rem;
+    /* smaller font to reduce wrapping */
+}
+
+.table-item>.flex-fill {
+    min-width: 0;
+    /* allow flex child to shrink */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    /* single line with ellipsis */
+}
+
+.table-item+.table-item {
+    border-top: 1px solid rgba(255, 255, 255, 0.02);
+}
+
+.action-bar {
+    margin-top: 6px
+}
+
+.result-panel .panel-body {
+    min-height: 420px
+}
+
+/* Ensure Source A and Source B top panels have the same min-height so they align */
+.col-lg-6.d-flex.flex-column>.db-panel {
+    min-height: 480px;
+    display: flex;
+    flex-direction: column;
+}
+
+.col-lg-6.d-flex.flex-column>.db-panel .panel-body {
+    flex: 1 1 auto;
+}
+
+.js-compare-results .table-summary {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap
+}
+
+.table-pill {
+    background: rgba(255, 255, 255, 0.03);
+    padding: 8px;
+    border-radius: 6px
+}
+
+.js-merge-rows {
+    min-height: 420px
+}
+
+/* Remove sticky behavior previously used; keep panels static but equal height */
+
+@media (max-width: 991px) {
+    .table-list-body {
+        grid-template-columns: 1fr;
+        /* single column on small screens */
+    }
+
+    .col-lg-6.d-flex.flex-column>.db-panel {
+        min-height: auto;
+    }
+}
+
+/* subtle visual tweak for file-drop (no special z-index) */
+.db-panel .file-drop {
+    position: relative;
+}
+
+@media(max-width:991px) {
+    .panel {
+        padding: 10px
+    }
+}
