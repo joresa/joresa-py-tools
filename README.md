@@ -2,28 +2,6 @@
 
 Welcome to the JoResa Python Tools documentation! This index will help you find the right document for your needs.
 
-## 🚀 Getting Started
-
-### New Users
-1. **[README.md](README.md)** - Start here for overview and installation
-2. **[QUICKSTART.md](docs/guides/quickstart.md)** - Step-by-step first-time setup guide
-3. **[SUMMARY.md](SUMMARY.md)** - Complete project overview and statistics
-
-### Developers
-1. **[ARCHITECTURE.md](docs/architecture/architecture.md)** - Technical architecture and design
-2. **[DIAGRAMS.md](DIAGRAMS.md)** - Visual system flow diagrams
-3. **[ADDING_TOOLS.md](ADDING_TOOLS.md)** - Guide to creating new tools
-4. **[PYCHARM_SETUP.md](PYCHARM_SETUP.md)** - PyCharm IDE setup and configuration
-
-### Contributors
-1. **[CONTRIBUTING.md](CONTRIBUTING.md)** - Contribution guidelines
-2. **[TESTING.md](docs/testing/testing.md)** - Testing procedures and checklist
-3. **[DESIGN.md](docs/design/visual-design.md)** - UI/UX design guide
-
-### DevOps / System Administrators
-1. **[DEPLOYMENT.md](docs/deployment/deploy.md)** - Production deployment guide
-2. **[.env.example](.env.example)** - Environment configuration template
-
 ## 📚 Complete Documentation List
 
 ### Essential Documents (Start Here!)
