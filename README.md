@@ -208,77 +208,43 @@ This index is maintained as part of the project. If you:
 - Rename a document → Update all links
 - Remove a document → Update this index
 
-## Git workflow
+## Pushing changes (Git) — Recommended workflow
 
-Preferred workflow for contributing code:
-
-1. Fork the repository on GitHub and clone your fork locally:
+Use the following steps to create a branch, commit your changes, and push to GitHub (macOS / zsh):
 
 ```bash
-git clone https://github.com/YOUR_GITHUB_USERNAME/joresa-py-tools.git
-cd joresa-py-tools
-```
+# Create a new feature branch off main
+git checkout -b feature/short-description
 
-2. Add the upstream remote (original repo) and keep your fork in sync:
-
-```bash
-git remote add upstream https://github.com/joresa/joresa-py-tools.git
-git fetch upstream
-```
-
-3. Create a feature branch from main:
-
-```bash
-git checkout -b feat/short-description
-```
-
-4. Make small, focused commits. Use the commit message format:
-
-```
-<type>: Short summary
-
-Longer description (optional)
-```
-
-Where type is one of: feat, fix, docs, style, refactor, test, chore.
-
--- Practical commands (the quick sequence you used before) --
-
-After making your changes locally, run:
-
-```bash
-# stage all changed files (or selectively stage files)
+# Work locally, then stage and commit changes
 git add .
+git commit -m "feat: short description of change"
 
-# commit with a concise, conventional message
-git commit -m "feat: short summary of change"
+# Push the new branch and set upstream
+git push -u origin feature/short-description
 
-# push the branch to your fork and set upstream
-git push -u origin feat/short-description
+# Open a Pull Request on GitHub from your branch to main
+# (request reviews, run CI, and merge when ready)
+
+# Keep your branch up to date while working
+git fetch origin
+# rebase onto latest main
+git rebase origin/main
+# or, alternatively
+git pull --rebase origin main
+
+# After the PR is merged, clean up local and remote branches
+git checkout main
+git pull origin main
+git branch -d feature/short-description
+git push origin --delete feature/short-description
 ```
 
-5. Keep your branch up-to-date before opening a PR:
-
-```bash
-git fetch upstream
-git rebase upstream/main
-# or: git merge upstream/main
-```
-
-If you rebased, you may need to force-push the branch:
-
-```bash
-git push --force-with-lease
-```
-
-6. Push your branch and open a Pull Request against `main` (see above).
-
-7. Address review comments, keep commits tidy (rebase/squash if needed), then request review and merge.
-
-Notes:
-- Use small, single-purpose PRs when possible.
-- Squash commits on merge if the history is noisy.
-- Run tests and linting before requesting review.
+Tips:
+- Use clear, focused commits and descriptive branch names (e.g. feature/add-diff-export).
+- Prefer small PRs for easier review.
+- Run tests, linters, and the local app (see Local macOS Quick Setup) before opening a PR.
+- Consider using conventional commit prefixes (feat:, fix:, docs:, chore:) to simplify changelogs.
 
 ## 🌟 Happy Reading!
 
