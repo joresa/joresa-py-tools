@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+    <h2>Rule Card History Detail</h2>
+    <p><strong>When:</strong> {{ history.timestamp }}</p>
+    <p><strong>Format:</strong> {{ history.format_type }}</p>
+    <h4>Input</h4>
+    <pre>{{ history.input_text }}</pre>
+    <h4>Result</h4>
+    {% if history.format_type == 'jira_html' %}
+    <div style="white-space:normal;word-wrap:break-word;overflow-wrap:break-word;">{{ history.result_text|safe }}</div>
+    {% else %}
+    <pre>{{ history.result_text }}</pre>
+    {% endif %}
+    <a href="{{ url_for('tools.rule_card_history') }}" class="btn btn-secondary">Back</a>
+</div>
+{% endblock %}

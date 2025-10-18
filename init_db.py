@@ -62,6 +62,22 @@ def init_db():
         else:
             print('wp_db_compare tool already present')
 
+        # Seed rule_card_formatter tool
+        if Tool.query.filter_by(name='rule_card_formatter').count() == 0:
+            rc_tool = Tool(
+                name='rule_card_formatter',
+                display_name='Rule Card Formatter',
+                description='Format rule card text into bulleted or indented outputs.',
+                icon='bi-list-ul',
+                route='/tools/rule-card-formatter',
+                is_active=True
+            )
+            db.session.add(rc_tool)
+            db.session.commit()
+            print('Seeded rule_card_formatter tool')
+        else:
+            print('rule_card_formatter tool already present')
+
         # Seed categories if not present
         if Category.query.count() == 0:
             general = Category(name='general', display_name='General')
