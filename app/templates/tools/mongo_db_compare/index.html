@@ -1,0 +1,155 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="card">
+    <div class="card-body">
+        <h3>Mongo DB Compare (Phase 1)</h3>
+        <form id="compare-form" method="post" action="{{ url_for('tools.mongo_db_compare_compare') }}">
+            {{ form.hidden_tag() }}
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>Source A</h5>
+                    <div class="mb-3">
+                        {{ form.uri_a(class_='form-control', id='uri_a') }}
+                    </div>
+                    <div class="mb-2">
+                        <button type="button" id="discover_a" class="btn btn-sm btn-outline-secondary">Discover
+                            DBs</button>
+                    </div>
+                    <div class="mb-3">
+                        <label for="db_a">Database (Source A)</label>
+                        <select id="db_a" name="db_a" class="form-select">
+                            <option value="">-- select DB --</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label>Collections (Source A)</label>
+                        <div id="collections_a"
+                            style="max-height:200px;overflow:auto;border:1px solid #eee;padding:8px;"></div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <h5>Source B</h5>
+                    <div class="mb-3">
+                        {{ form.uri_b(class_='form-control', id='uri_b') }}
+                    </div>
+                    <div class="mb-2">
+                        <button type="button" id="discover_b" class="btn btn-sm btn-outline-secondary">Discover
+                            DBs</button>
+                    </div>
+                    <div class="mb-3">
+                        <label for="db_b">Database (Source B)</label>
+                        <select id="db_b" name="db_b" class="form-select">
+                            <option value="">-- select DB --</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label>Collections (Source B)</label>
+                        <div id="collections_b"
+                            style="max-height:200px;overflow:auto;border:1px solid #eee;padding:8px;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-3">
+                <div class="col-md-4">
+                    <label for="doc_limit">Document limit per collection</label>
+                    {{ form.doc_limit(class_='form-control') }}
+                </div>
+                <div class="col-md-8 d-flex align-items-end">
+                    <div class="form-check me-3">
+                        <input class="form-check-input" type="checkbox" value="1" id="compare_intersection" checked>
+                        <label class="form-check-label" for="compare_intersection">Compare only collections present in
+                            both sources (intersection)</label>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Compare</button>
+                </div>
+            </div>
+
+            <input type="hidden" name="collections" id="collections_input" />
+        </form>
+    </div>
+</div>
+
+<script>
+    const DISCOVER_URL = {{ url_for('tools.mongo_db_compare_discover') | tojson }};
+    const COLLECTIONS_URL = {{ url_for('tools.mongo_db_compare_collections') | tojson }};
+    async function discover(uri, target_select_id, coll_container_id) {
+        const res = await fetch(DISCOVER_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ uri })
+        });
+        const j = await res.json();
+        if (j.ok) {
+            const sel = document.getElementById(target_select_id);
+            sel.innerHTML = '<option value="">-- select DB --</option>';
+            for (const d of j.dbs) {
+                const opt = document.createElement('option'); opt.value = d; opt.textContent = d; sel.appendChild(opt);
+            }
+            // clear collections
+            document.getElementById(coll_container_id).innerHTML = '';
+        } else {
+            alert('Discover failed: ' + (j.error || 'unknown'));
+        }
+    }
+
+    async function loadCollections(uri, db, target_container_id) {
+        const res = await fetch(COLLECTIONS_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ uri, db_name: db })
+        });
+        const j = await res.json();
+        if (j.ok) {
+            const cont = document.getElementById(target_container_id);
+            cont.innerHTML = '';
+            for (const c of j.collections) {
+                const id = target_container_id + '_' + c.replace(/[^a-z0-9_-]/gi, '_');
+                const cb = document.createElement('div');
+                cb.innerHTML = `<div class="form-check"><input class="form-check-input coll-cb" type="checkbox" value="${c}" id="${id}"><label class="form-check-label" for="${id}">${c}</label></div>`;
+                cont.appendChild(cb);
+            }
+        } else {
+            alert('Collections load failed: ' + (j.error || 'unknown'));
+        }
+    }
+
+    document.getElementById('discover_a').addEventListener('click', async () => {
+        const uri = document.getElementById('uri_a').value.trim();
+        await discover(uri, 'db_a', 'collections_a');
+    });
+
+    document.getElementById('discover_b').addEventListener('click', async () => {
+        const uri = document.getElementById('uri_b').value.trim();
+        await discover(uri, 'db_b', 'collections_b');
+    });
+
+    // Load collections when DB selection changes
+    document.getElementById('db_a').addEventListener('change', async (e) => {
+        const db = e.target.value; const uri = document.getElementById('uri_a').value.trim();
+        if (db) await loadCollections(uri, db, 'collections_a');
+    });
+    document.getElementById('db_b').addEventListener('change', async (e) => {
+        const db = e.target.value; const uri = document.getElementById('uri_b').value.trim();
+        if (db) await loadCollections(uri, db, 'collections_b');
+    });
+
+    // Before submit: collect selected collections into hidden input
+    document.getElementById('compare-form').addEventListener('submit', function (e) {
+        const intersectionOnly = document.getElementById('compare_intersection').checked;
+        const cbsA = Array.from(document.querySelectorAll('#collections_a .coll-cb:checked')).map(x => x.value);
+        const cbsB = Array.from(document.querySelectorAll('#collections_b .coll-cb:checked')).map(x => x.value);
+        let collections = [];
+        if (cbsA.length === 0 && cbsB.length === 0) {
+            // nothing chosen, leave blank to indicate auto-intersection on server
+            collections = '';
+        } else if (intersectionOnly) {
+            collections = cbsA.filter(x => cbsB.includes(x));
+        } else {
+            collections = Array.from(new Set(cbsA.concat(cbsB)));
+        }
+        document.getElementById('collections_input').value = Array.isArray(collections) ? collections.join(',') : collections;
+    });
+</script>
+{% endblock %}

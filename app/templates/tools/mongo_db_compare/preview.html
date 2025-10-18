@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="card">
+    <div class="card-body">
+        <h3>Preview Upsert Operations</h3>
+        <p>Session: {{ session.id }}</p>
+        <p>DB: {{ session.meta.db }}</p>
+        <h4>Collections</h4>
+        <ul>
+            {% for coll, info in session.collections.items() %}
+            <li>{{ coll }}: +{{ info.added_count }} -{{ info.removed_count }} ~{{ info.modified_count }}</li>
+            {% endfor %}
+        </ul>
+
+        <h4>Modified document samples</h4>
+        {% for coll, info in session.collections.items() %}
+        {% if info.modified %}
+        <h5>{{ coll }}</h5>
+        <div class="list-group mb-3">
+            {% for m in info.modified %}
+            <a href="#" class="list-group-item list-group-item-action">
+                <strong>{{ m._id }}</strong>
+                <pre style="white-space:pre-wrap;">A: {{ m.a | tojson(indent=2) }}</pre>
+                <pre style="white-space:pre-wrap;">B: {{ m.b | tojson(indent=2) }}</pre>
+            </a>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

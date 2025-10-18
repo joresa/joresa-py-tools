@@ -388,3 +388,132 @@ def rule_card_history_detail(id):
     from app.models import RuleCardHistory
     h = RuleCardHistory.query.filter_by(id=id, user_id=current_user.id).first_or_404()
     return render_template('tools/rule_card_history_detail.html', title='Rule Card History Detail', history=h)
+
+@bp.route('/mongo-db-compare')
+@login_required
+def mongo_db_compare_index():
+    from app.tools.forms import MongoCompareForm
+    form = MongoCompareForm()
+    return render_template('tools/mongo_db_compare/index.html', form=form)
+
+
+@bp.route('/mongo-db-compare/discover', methods=['POST'])
+@login_required
+def mongo_db_compare_discover():
+    """Discover databases for a given URI (POST body: {uri, side: 'A'|'B'})"""
+    data = request.json or {}
+    uri = data.get('uri')
+    if not uri:
+        return jsonify({'ok': False, 'error': 'No URI provided'}), 400
+    try:
+        from app.tools.mongo_db_compare import connect, list_databases
+        client = connect(uri)
+        dbs = list_databases(client)
+        return jsonify({'ok': True, 'dbs': dbs}), 200
+    except Exception as e:
+        return jsonify({'ok': False, 'error': str(e)}), 200
+
+
+@bp.route('/mongo-db-compare/collections', methods=['POST'])
+@login_required
+def mongo_db_compare_collections():
+    """Return collections for a given URI and database (POST body: {uri, db_name})"""
+    data = request.json or {}
+    uri = data.get('uri')
+    db_name = data.get('db_name')
+    if not uri or not db_name:
+        return jsonify({'ok': False, 'error': 'Missing uri or db_name'}), 400
+    try:
+        from app.tools.mongo_db_compare import connect, list_collections
+        client = connect(uri)
+        cols = list_collections(client, db_name)
+        return jsonify({'ok': True, 'collections': cols}), 200
+    except Exception as e:
+        return jsonify({'ok': False, 'error': str(e)}), 200
+
+
+# Update compare route signature to accept db_name_a and db_name_b
+@bp.route('/mongo-db-compare/compare', methods=['POST'])
+@login_required
+def mongo_db_compare_compare():
+    from app.tools.forms import MongoCompareForm
+    from app.tools.mongo_db_compare import connect, list_collections, compare_collections, save_session
+    form = MongoCompareForm()
+    # form now expected to provide uri_a, uri_b, db_a, db_b, collections string
+    if not form.validate_on_submit():
+        flash('Please provide both Mongo URIs and database names', 'danger')
+        return redirect(url_for('tools.mongo_db_compare_index'))
+
+    uri_a = form.uri_a.data.strip()
+    uri_b = form.uri_b.data.strip()
+    db_a = request.form.get('db_a', '').strip()
+    db_b = request.form.get('db_b', '').strip()
+    coll_input = form.collections.data or ''
+    try:
+        limit = int(form.doc_limit.data)
+    except Exception:
+        limit = 1000
+
+    collections = [c.strip() for c in coll_input.split(',') if c.strip()] if coll_input else None
+
+    # Connect to both
+    try:
+        client_a = connect(uri_a)
+    except Exception as e:
+        flash(f'Could not connect to Source A: {e}', 'danger')
+        return redirect(url_for('tools.mongo_db_compare_index'))
+    try:
+        client_b = connect(uri_b)
+    except Exception as e:
+        flash(f'Could not connect to Source B: {e}', 'danger')
+        return redirect(url_for('tools.mongo_db_compare_index'))
+
+    # If collections None, list collections from both dbs and take intersection
+    if collections is None:
+        cols_a = set(list_collections(client_a, db_a))
+        cols_b = set(list_collections(client_b, db_b))
+        collections = sorted(list(cols_a & cols_b))
+
+    session = compare_collections(client_a, client_b, db_a, db_b, collections, limit=limit)
+    import uuid
+    session_id = str(uuid.uuid4())
+    session['id'] = session_id
+    session['meta'] = {'db_a': db_a, 'db_b': db_b, 'collections': collections, 'limit': limit}
+    save_session(session_id, session)
+
+    # record usage if tool exists
+    try:
+        tool = Tool.query.filter_by(name='mongo_db_compare').first()
+        if tool:
+            usage = ToolUsage(user_id=current_user.id, tool_id=tool.id)
+            db.session.add(usage)
+            db.session.commit()
+    except Exception:
+        pass
+
+    return redirect(url_for('tools.mongo_db_compare_result', session_id=session_id))
+
+
+@bp.route('/mongo-db-compare/result/<session_id>')
+@login_required
+def mongo_db_compare_result(session_id):
+    from app.tools.mongo_db_compare import load_session
+    try:
+        session = load_session(session_id)
+    except FileNotFoundError:
+        flash('Session not found', 'danger')
+        return redirect(url_for('tools.mongo_db_compare_index'))
+    return render_template('tools/mongo_db_compare/result.html', session=session)
+
+
+@bp.route('/mongo-db-compare/preview/<session_id>')
+@login_required
+def mongo_db_compare_preview(session_id):
+    # Simple preview endpoint that returns generated pymongo bulk op code for download or inspection
+    from app.tools.mongo_db_compare import load_session
+    try:
+        session = load_session(session_id)
+    except FileNotFoundError:
+        return jsonify({'error': 'session not found'}), 404
+    # For now return JSON of session (preview shown in template)
+    return render_template('tools/mongo_db_compare/preview.html', session=session)

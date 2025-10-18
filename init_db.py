@@ -78,6 +78,22 @@ def init_db():
         else:
             print('rule_card_formatter tool already present')
 
+        # Seed mongo_db_compare tool
+        if Tool.query.filter_by(name='mongo_db_compare').count() == 0:
+            mongo_tool = Tool(
+                name='mongo_db_compare',
+                display_name='Mongo DB Compare',
+                description='Compare two MongoDB sources (URI A/B) and preview upsert operations (preview-only).',
+                icon='bi-database-fill-gear',
+                route='/tools/mongo-db-compare',
+                is_active=True
+            )
+            db.session.add(mongo_tool)
+            db.session.commit()
+            print('Seeded mongo_db_compare tool')
+        else:
+            print('mongo_db_compare tool already present')
+
         # Seed categories if not present
         if Category.query.count() == 0:
             general = Category(name='general', display_name='General')

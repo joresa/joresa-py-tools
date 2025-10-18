@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="card">
+    <div class="card-body">
+        <h3>Compare Result: {{ session.meta.db }}</h3>
+        <p>Collections compared: {{ session.meta.collections | join(', ') }}</p>
+        <table class="table table-hover table-striped">
+            <thead>
+                <tr>
+                    <th>Collection</th>
+                    <th>Added</th>
+                    <th>Removed</th>
+                    <th>Modified</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for coll, info in session.collections.items() %}
+                <tr>
+                    <td>{{ coll }}</td>
+                    <td>{{ info.added_count }}</td>
+                    <td>{{ info.removed_count }}</td>
+                    <td>{{ info.modified_count }}</td>
+                    <td><a class="btn btn-sm btn-outline-primary"
+                            href="{{ url_for('tools.mongo_db_compare_preview', session_id=session.id) }}">Preview</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
