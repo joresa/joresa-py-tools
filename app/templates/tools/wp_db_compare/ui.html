@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+{% block extra_css %}
+<link href="{{ url_for('static', filename='css/wp_db_compare.css') }}" rel="stylesheet">
+{% endblock %}
+{% block content %}
+<div class="wp-compare-app container-fluid">
+    <div class="row gap-3">
+        <!-- Header row: title on left, actions on right -->
+        <div class="col-12 d-flex align-items-start justify-content-between gap-3">
+            <div>
+                <h3 class="mb-2">WP SQL DB Compare</h3>
+                <p class="text-muted small">Upload two SQL dumps (or detect tables) and compare. This is a responsive UI
+                    scaffold for Phase 1.</p>
+            </div>
+            <div class="align-self-center">
+                <div class="d-flex gap-3" role="group" aria-label="actions">
+                    <button id="export-merge" class="btn btn-outline-primary">Export merge DB</button>
+                    <button id="start-compare" class="btn btn-primary">Start DB Compare</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Two-column vertical layout -->
+        <div class="col-12">
+            <div class="row">
+                <!-- Left column: Source A + Compare Result -->
+                <div class="col-lg-6 d-flex flex-column gap-3">
+                    <div class="panel db-panel">
+                        <div class="panel-header">
+                            <span class="panel-title">Source A</span>
+                            <div class="panel-actions">
+                                <button class="btn btn-sm btn-outline-secondary js-validate">Validate</button>
+                            </div>
+                        </div>
+                        <div class="panel-body">
+                            <label class="file-drop" for="file-a-input">
+                                <input id="file-a-input" type="file" accept=".sql" hidden>
+                                <div class="drop-inner">
+                                    <i class="bi bi-upload"></i>
+                                    <div class="drop-text">Drop or choose SQL dump for DB1</div>
+                                    <div class="file-info small js-file-a-name" title="">No file selected
+                                    </div>
+                                </div>
+                            </label>
+
+                            <div class="table-list mt-3">
+                                <div class="table-list-header d-flex justify-content-between align-items-center">
+                                    <strong>Detected Tables</strong>
+                                    <div>
+                                        <button class="btn btn-xs btn-link js-select-all">Select all</button>
+                                        <button class="btn btn-xs btn-link js-deselect-all">Deselect</button>
+                                    </div>
+                                </div>
+                                <div class="table-list-body js-tables-a"> <em>No tables detected
+                                        yet</em></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel result-panel">
+                        <div class="panel-header"><span class="panel-title">DB Compare Result</span></div>
+                        <div class="panel-body js-compare-results"> <em class="text-muted">Run a compare to see results
+                                here.</em></div>
+                    </div>
+                </div>
+
+                <!-- Right column: Source B + Merge Rows -->
+                <div class="col-lg-6 d-flex flex-column gap-3">
+                    <div class="panel db-panel">
+                        <div class="panel-header">
+                            <span class="panel-title">Source B</span>
+                            <div class="panel-actions">
+                                <button class="btn btn-sm btn-outline-secondary js-validate">Validate</button>
+                            </div>
+                        </div>
+                        <div class="panel-body">
+                            <label class="file-drop" for="file-b-input">
+                                <input id="file-b-input" type="file" accept=".sql" hidden>
+                                <div class="drop-inner">
+                                    <i class="bi bi-upload"></i>
+                                    <div class="drop-text">Drop or choose SQL dump for DB2</div>
+                                    <div class="file-info small js-file-b-name" title="">No file selected
+                                    </div>
+                                </div>
+                            </label>
+
+                            <div class="table-list mt-3">
+                                <div class="table-list-header d-flex justify-content-between align-items-center">
+                                    <strong>Detected Tables</strong>
+                                    <div>
+                                        <button class="btn btn-xs btn-link js-select-all">Select all</button>
+                                        <button class="btn btn-xs btn-link js-deselect-all">Deselect</button>
+                                    </div>
+                                </div>
+                                <div class="table-list-body js-tables-b"> <em>No tables detected
+                                        yet</em></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel result-panel">
+                        <div class="panel-header"><span class="panel-title">Rows to be updated in the merged DB</span>
+                        </div>
+                        <div class="panel-body js-merge-rows"> <em class="text-muted">Selected resolutions will appear
+                                here.</em></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/wp_db_compare.js') }}"></script>
+{% endblock %}

@@ -10,7 +10,7 @@ import re
 import os
 import uuid
 from werkzeug.utils import secure_filename
-from app.tools.wp_db_compare import parse_sql_inserts, compare_tables, save_session, load_session
+from app.tools.wp_db_compare import parse_sql_inserts, compare_tables, save_session, load_session, detect_tables_in_dump
 
 def record_tool_usage(tool_name):
     """Record that a tool was used"""
@@ -152,8 +152,8 @@ def diff_history_detail(id):
 @bp.route('/wp-db-compare')
 @login_required
 def wp_db_compare_index():
-    # Simple upload form page (template to create)
-    return render_template('tools/wp_db_compare/index.html')
+    # Render the interactive UI (moved from /wp-db-compare/ui)
+    return render_template('tools/wp_db_compare/ui.html')
 
 
 @bp.route('/wp-db-compare/compare', methods=['POST'])
@@ -249,3 +249,96 @@ def wp_db_compare_scan_db():
     except Exception:
         tables = []
     return jsonify({'tables': sorted(tables)})
+
+@bp.route('/wp-db-compare/ui')
+@login_required
+def wp_db_compare_ui():
+    """Render the scaffolded UI page for WP DB Compare (preview/scaffold)."""
+    return render_template('tools/wp_db_compare/ui.html')
+
+@bp.route('/wp-db-compare/validate', methods=['POST'])
+@login_required
+def wp_db_compare_validate():
+    """Validate uploaded SQL dump and return detected tables and any errors/warnings."""
+    f = request.files.get('file')
+    if not f:
+        return jsonify({'valid': False, 'errors': ['No file uploaded']}), 200
+
+    filename = secure_filename(f.filename or '')
+    if not filename.lower().endswith('.sql'):
+        return jsonify({'valid': False, 'errors': ['File does not have a .sql extension'], 'filename': filename}), 200
+
+    try:
+        text = f.read().decode('utf-8', errors='replace')
+    except Exception as e:
+        return jsonify({'valid': False, 'errors': [f'Could not read file: {e}'], 'filename': filename}), 200
+
+    errors = []
+    warnings = []
+
+    # quick size checks (warn for very small or very large files)
+    size = len(text.encode('utf-8'))
+    if size < 100:
+        errors.append('File content too small to be a SQL dump')
+    if size > 25 * 1024 * 1024:
+        warnings.append('File is large (>25MB); parsing may be slow')
+
+    # quick heuristic: look for common SQL dump statements
+    if not re.search(r"\b(INSERT\s+INTO|CREATE\s+TABLE|ALTER\s+TABLE|DROP\s+TABLE|LOCK\s+TABLES)\b", text, re.IGNORECASE):
+        errors.append('No SQL statements detected (INSERT/CREATE/ALTER/DROP)')
+
+    # detect table names
+    try:
+        tables = detect_tables_in_dump(text)
+    except Exception as e:
+        errors.append(f'Error detecting tables: {e}')
+        tables = []
+
+    if not tables:
+        errors.append('No table names detected in the dump')
+
+    # heuristic: check for unbalanced parentheses
+    open_paren = text.count('(')
+    close_paren = text.count(')')
+    if open_paren != close_paren:
+        errors.append(f'Unbalanced parentheses: found {open_paren} "(" vs {close_paren} ")"')
+
+    # heuristics for unbalanced single quotes (basic: skip doubled single-quotes which represent escapes)
+    def has_unbalanced_single_quotes(t: str) -> bool:
+        i = 0
+        unmatched = 0
+        L = len(t)
+        while i < L:
+            ch = t[i]
+            if ch == "'":
+                # if next char is also a quote, it's an escaped quote '' -> skip both
+                if i + 1 < L and t[i + 1] == "'":
+                    i += 2
+                    continue
+                # otherwise toggle unmatched
+                unmatched ^= 1
+            i += 1
+        return bool(unmatched)
+
+    try:
+        if has_unbalanced_single_quotes(text):
+            errors.append('Possible unbalanced single quotes detected (unescaped or unmatched quotes)')
+    except Exception:
+        # non-fatal
+        pass
+
+    # try a lightweight parse for a few tables to ensure basic INSERT parsing works
+    parsed_ok = False
+    try:
+        sample_tables = tables[:5]
+        parsed = parse_sql_inserts(text[:200000], sample_tables)
+        parsed_ok = any(parsed.get(t) for t in sample_tables)
+        if not parsed_ok:
+            warnings.append('No INSERT rows found in sample parse for the first detected tables')
+    except Exception as e:
+        errors.append(f'Parsing error: {e}')
+
+    # Prepare response
+    valid = len(errors) == 0
+    response = {'valid': valid, 'filename': filename, 'tables': tables, 'parsed_sample': parsed_ok, 'errors': errors, 'warnings': warnings}
+    return jsonify(response), 200
