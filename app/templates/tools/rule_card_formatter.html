@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+    <h2>Rule card formatter</h2>
+    <form method="post">
+        {{ form.hidden_tag() }}
+        <div class="mb-3">
+            {{ form.input_text.label }}
+            {{ form.input_text(class_='form-control', rows=10) }}
+        </div>
+        <div class="mb-3">
+            {{ form.format_type.label }}
+            <div>
+                {% for sub in form.format_type %}
+                <div class="form-check form-check-inline">
+                    {{ sub(class_='form-check-input') }}
+                    {{ sub.label(class_='form-check-label') }}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="mb-3">
+            {{ form.submit(class_='btn btn-primary') }}
+            <button type="button" id="clear-btn" class="btn btn-secondary ms-2">Clear</button>
+            <a href="{{ url_for('tools.rule_card_history') }}" class="btn btn-outline-info ms-2">History</a>
+        </div>
+    </form>
+
+    {% if result %}
+    <div class="mt-4">
+        <h4>Formatted output</h4>
+        <div class="mb-2">
+            <button type="button" id="copy-html-btn" class="btn btn-sm btn-outline-success">Copy HTML</button>
+            <button type="button" id="copy-plain-btn" class="btn btn-sm btn-outline-secondary ms-2">Copy Plain
+                Text</button>
+        </div>
+        {% if result_fmt == 'jira_html' %}
+        <div id="result-block" class="p-3 bg-light border"
+            style="white-space:normal;word-break:break-word;overflow-wrap:break-word;">{{ result|safe }}</div>
+        <!-- hidden raw HTML for copying -->
+        <textarea id="result-raw" style="display:none;">{{ result|safe }}</textarea>
+        {% else %}
+        <pre id="result-block" class="p-3 bg-light border">{{ result }}</pre>
+        <textarea id="result-raw" style="display:none;">{{ result }}</textarea>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+<script>
+    document.getElementById('clear-btn').addEventListener('click', function () {
+        const ta = document.querySelector('textarea[name="input_text"]');
+        if (ta) ta.value = '';
+        const res = document.getElementById('result-block');
+        if (res) res.textContent = '';
+        const raw = document.getElementById('result-raw');
+        if (raw) raw.value = '';
+    });
+
+    function fallbackCopyTextToClipboard(text) {
+        var textArea = document.createElement("textarea");
+        textArea.value = text;
+        // Avoid scrolling to bottom
+        textArea.style.top = "0";
+        textArea.style.left = "0";
+        textArea.style.position = "fixed";
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        try {
+            document.execCommand('copy');
+        } catch (err) {
+            console.error('Fallback: Oops, unable to copy', err);
+        }
+        document.body.removeChild(textArea);
+    }
+
+    function copyTextToClipboard(text) {
+        if (!navigator.clipboard) {
+            fallbackCopyTextToClipboard(text);
+            return;
+        }
+        navigator.clipboard.writeText(text).catch(function (err) {
+            console.error('Async: Could not copy text: ', err);
+        });
+    }
+
+    const copyHtmlBtn = document.getElementById('copy-html-btn');
+    if (copyHtmlBtn) {
+        copyHtmlBtn.addEventListener('click', function () {
+            const raw = document.getElementById('result-raw');
+            if (raw) {
+                copyTextToClipboard(raw.value);
+            } else {
+                const rb = document.getElementById('result-block');
+                if (rb) copyTextToClipboard(rb.textContent || rb.innerText);
+            }
+        });
+    }
+
+    const copyPlainBtn = document.getElementById('copy-plain-btn');
+    if (copyPlainBtn) {
+        copyPlainBtn.addEventListener('click', function () {
+            const rb = document.getElementById('result-block');
+            if (rb) copyTextToClipboard(rb.textContent || rb.innerText);
+        });
+    }
+</script>
+{% endblock %}

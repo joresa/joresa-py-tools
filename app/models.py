@@ -83,3 +83,15 @@ class DiffHistory(db.Model):
     
     def __repr__(self):
         return f'<DiffHistory {self.id}>'
+
+# History for Rule Card Formatter tool
+class RuleCardHistory(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    format_type = db.Column(db.String(64))
+    input_text = db.Column(db.Text)
+    result_text = db.Column(db.Text)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow, index=True)
+
+    def __repr__(self):
+        return f'<RuleCardHistory {self.id}>'

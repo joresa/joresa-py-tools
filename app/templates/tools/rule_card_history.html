@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h2><i class="bi bi-clock-history"></i> Rule Card History</h2>
+        <p class="text-muted">Your previous rule card formats</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                {% if history %}
+                <div class="table-responsive">
+                    <table class="table table-hover table-sm">
+                        <thead>
+                            <tr>
+                                <th>Date/Time</th>
+                                <th>Format</th>
+                                <th>Preview</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for h in history %}
+                            <tr>
+                                <td>{{ h.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                                <td class="text-nowrap">{{ h.format_type }}</td>
+                                <td style="max-width:60ch;">
+                                    {% if h.format_type == 'jira_html' %}
+                                    <div
+                                        style="max-height:120px;overflow:auto;white-space:normal;word-wrap:break-word;">
+                                        {{ h.result_text|safe }}</div>
+                                    {% else %}
+                                    <pre style="max-height:120px;overflow:auto;">{{ h.result_text }}</pre>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="{{ url_for('tools.rule_card_history_detail', id=h.id) }}"
+                                        class="btn btn-sm btn-primary">
+                                        <i class="bi bi-eye"></i> View
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle"></i> No history yet. Start by <a
+                        href="{{ url_for('tools.rule_card_formatter') }}">formatting a rule card</a>!
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-12">
+        <a href="{{ url_for('tools.rule_card_formatter') }}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> New Format
+        </a>
+    </div>
+</div>
+{% endblock %}

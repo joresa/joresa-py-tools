@@ -11,6 +11,8 @@ import os
 import uuid
 from werkzeug.utils import secure_filename
 from app.tools.wp_db_compare import parse_sql_inserts, compare_tables, save_session, load_session, detect_tables_in_dump
+from app.tools.rulecard import format_rulecard
+from app.tools.forms import RuleCardForm
 
 def record_tool_usage(tool_name):
     """Record that a tool was used"""
@@ -342,3 +344,47 @@ def wp_db_compare_validate():
     valid = len(errors) == 0
     response = {'valid': valid, 'filename': filename, 'tables': tables, 'parsed_sample': parsed_ok, 'errors': errors, 'warnings': warnings}
     return jsonify(response), 200
+
+@bp.route('/rule-card-formatter', methods=['GET', 'POST'])
+@login_required
+def rule_card_formatter():
+    form = RuleCardForm()
+    result = None
+    result_fmt = None
+    if form.validate_on_submit():
+        text = form.input_text.data or ''
+        fmt = form.format_type.data or 'bulleted'
+        result = format_rulecard(text, fmt)
+        result_fmt = fmt
+        # record usage
+        try:
+            tool = Tool.query.filter_by(name='rule_card_formatter').first()
+            if tool:
+                usage = ToolUsage(user_id=current_user.id, tool_id=tool.id)
+                db.session.add(usage)
+                db.session.commit()
+        except Exception:
+            pass
+        # Save history for this formatted input
+        try:
+            from app.models import RuleCardHistory
+            h = RuleCardHistory(user_id=current_user.id, format_type=fmt, input_text=text, result_text=result)
+            db.session.add(h)
+            db.session.commit()
+        except Exception:
+            pass
+    return render_template('tools/rule_card_formatter.html', form=form, result=result, result_fmt=result_fmt)
+
+@bp.route('/rule-card-formatter/history')
+@login_required
+def rule_card_history():
+    from app.models import RuleCardHistory
+    history = RuleCardHistory.query.filter_by(user_id=current_user.id).order_by(RuleCardHistory.timestamp.desc()).all()
+    return render_template('tools/rule_card_history.html', title='Rule Card History', history=history)
+
+@bp.route('/rule-card-formatter/history/<int:id>')
+@login_required
+def rule_card_history_detail(id):
+    from app.models import RuleCardHistory
+    h = RuleCardHistory.query.filter_by(id=id, user_id=current_user.id).first_or_404()
+    return render_template('tools/rule_card_history_detail.html', title='Rule Card History Detail', history=h)
